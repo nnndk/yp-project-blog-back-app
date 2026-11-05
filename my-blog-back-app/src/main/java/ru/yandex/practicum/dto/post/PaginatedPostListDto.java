@@ -1,15 +1,14 @@
-package ru.yandex.practicum.dto;
+package ru.yandex.practicum.dto.post;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.yandex.practicum.model.PaginatedObjectList;
+import ru.yandex.practicum.model.common.PaginatedList;
 
 import java.util.List;
 
 @Getter
 @Setter
-public class PaginatedPostListDto extends PaginatedObjectList {
+public class PaginatedPostListDto extends PaginatedList {
 
     private List<PostDto> posts;
 

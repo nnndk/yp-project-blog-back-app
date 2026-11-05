@@ -1,0 +1,19 @@
+package ru.yandex.practicum.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class Post {
+
+    private long id;
+
+    private String title;
+
+    private String text;
+
+    private String[] tags;
+
+    private int likesCount;
+}
