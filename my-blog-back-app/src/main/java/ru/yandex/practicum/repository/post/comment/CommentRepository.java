@@ -8,9 +8,14 @@ import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CommentRepository {
+
+    Map<Long, Integer> getPostCommentsCount(long[] postIds);
+
+    int getPostCommentsCount(long postId);
 
     List<CommentDto> findAllPostComments(PostDto post);
 

@@ -13,7 +13,5 @@ public class Post {
 
     private String text;
 
-    private String[] tags;
-
     private int likesCount;
 }

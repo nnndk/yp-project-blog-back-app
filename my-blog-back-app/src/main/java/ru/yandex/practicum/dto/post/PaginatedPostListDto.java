@@ -13,8 +13,8 @@ public class PaginatedPostListDto extends PaginatedList {
     private List<PostDto> posts;
 
 
-    public PaginatedPostListDto(boolean hasPrev, boolean haseNext, int lastPage, List<PostDto> posts) {
-        super(hasPrev, haseNext, lastPage);
+    public PaginatedPostListDto(boolean hasPrev, boolean hasNext, int lastPage, List<PostDto> posts) {
+        super(hasPrev, hasNext, lastPage);
         this.posts = posts;
     }
 }

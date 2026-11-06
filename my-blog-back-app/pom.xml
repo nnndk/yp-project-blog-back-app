@@ -20,6 +20,7 @@
         <spring.data.jdbc.version>3.4.1</spring.data.jdbc.version>
         <servlet.version>6.0.0</servlet.version>
         <jackson.version>2.17.0</jackson.version>
+        <h2driver.version>2.5.252</h2driver.version>
     </properties>
 
     <build>
@@ -100,6 +101,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2driver.version}</version>
         </dependency>
     </dependencies>
 
