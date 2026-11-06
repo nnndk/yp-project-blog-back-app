@@ -8,7 +8,7 @@ public interface PostEditorService {
 
     PostDto createPost(CreatePostDto dto);
 
-    PostDto updatePost(UpdatePostDto dto);
+    PostDto updatePost(long id, UpdatePostDto dto);
 
     void deletePostById(long id);
 

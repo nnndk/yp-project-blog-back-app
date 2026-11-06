@@ -43,9 +43,12 @@ public class PostController {
         return postEditorService.createPost(dto);
     }
 
-    @PutMapping
-    public PostDto updatePost(@RequestBody UpdatePostDto dto) {
-        return postEditorService.updatePost(dto);
+    @PutMapping("/{id}")
+    public PostDto updatePost(
+            @PathVariable("id") long id,
+            @RequestBody UpdatePostDto dto
+    ) {
+        return postEditorService.updatePost(id, dto);
     }
 
     @DeleteMapping("/{id}")
