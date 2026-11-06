@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.yandex.practicum.dto.post.CreatePostDto;
+import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
@@ -39,7 +39,7 @@ public class PostController {
     }
 
     @PostMapping
-    public PostDto createPost(@RequestBody CreatePostDto dto) {
+    public PostDto createPost(@RequestBody CreatePostWithTagsDto dto) {
         return postEditorService.createPost(dto);
     }
 

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.repository.post;
 
 import ru.yandex.practicum.dto.post.CreatePostDto;
-import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
 import ru.yandex.practicum.model.Post;
@@ -24,7 +23,9 @@ public interface PostRepository {
 
     boolean postWithIdExist(long id);
 
-    PostDto createPost(CreatePostDto dto);
+    Post createPost(CreatePostDto dto);
+
+    void addTagsToPost(Post post, String[] tags);
 
     PostDto updatePost(long id, UpdatePostDto dto);
 

@@ -1,7 +1,7 @@
 create table if not exists tags(
     id bigserial primary key,
     tag varchar(20) unique not null,
-    created_at timestamp with time zone not null
+    created_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
 );
 
 
@@ -10,8 +10,8 @@ create table if not exists posts(
     title varchar(100) not null,
     text varchar(5000) not null,
     likes_count integer not null default 0,
-    created_at timestamp with time zone not null,
-    modified_at timestamp with time zone not null
+    created_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+    modified_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
 );
 
 create table if not exists posts_tags_link(
@@ -34,14 +34,14 @@ create table if not exists comments(
 
 insert into tags(tag, created_at)
 values
-    ('tag_1', CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
-    ('tag_2', CURRENT_TIMESTAMP AT TIME ZONE 'UTC');
+    ('tag_1'),
+    ('tag_2');
 
 insert into posts(title, text, likes_count, created_at, modified_at)
 values
-    ('Название поста 1', 'Текст поста в формате Markdown...', 0, CURRENT_TIMESTAMP AT TIME ZONE 'UTC', CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
-    ('Название поста 2', 'Текст поста в формате Markdown...', 0, CURRENT_TIMESTAMP AT TIME ZONE 'UTC', CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
-    ('Название поста 3', 'Текст поста в формате Markdown...', 0, CURRENT_TIMESTAMP AT TIME ZONE 'UTC', CURRENT_TIMESTAMP AT TIME ZONE 'UTC');
+    ('Название поста 1', 'Текст поста в формате Markdown...'),
+    ('Название поста 2', 'Текст поста в формате Markdown...'),
+    ('Название поста 3', 'Текст поста в формате Markdown...');
 
 insert into posts_tags_link(post_id, tag_id)
 values

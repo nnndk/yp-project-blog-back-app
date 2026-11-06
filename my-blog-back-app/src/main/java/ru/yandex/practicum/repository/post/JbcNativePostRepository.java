@@ -2,12 +2,19 @@ package ru.yandex.practicum.repository.post;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dto.post.CreatePostDto;
+import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
 import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.tools.DateTimeTools;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Repository
@@ -15,6 +22,7 @@ import java.util.*;
 public class JbcNativePostRepository implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final DateTimeTools dateTimeTools;
 
 
     @Override
@@ -129,8 +137,32 @@ public class JbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public PostDto createPost(CreatePostDto dto) {
-        return null;
+    public Post createPost(CreatePostDto dto) {
+        OffsetDateTime now = dateTimeTools.getCurrentDateTime();
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    "insert into posts(title, text, created_at, modified_at) values(?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, dto.title());
+            ps.setString(2, dto.text());
+            ps.setObject(3, now);
+            ps.setObject(4, now);
+            return ps;
+        }, keyHolder);
+
+        long id = Optional.ofNullable(keyHolder.getKeyAs(Long.class)).orElseThrow(
+                () -> new RuntimeException("Failed to get generated key"));
+
+        return findPostById(id).orElseThrow(
+                () -> new RuntimeException("Failed to get created post"));
+    }
+
+    @Override
+    public void addTagsToPost(Post post, String[] tags) {
+
     }
 
     @Override

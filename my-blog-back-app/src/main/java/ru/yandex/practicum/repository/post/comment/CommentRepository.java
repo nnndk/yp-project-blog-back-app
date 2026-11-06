@@ -1,8 +1,6 @@
 package ru.yandex.practicum.repository.post.comment;
 
-import ru.yandex.practicum.dto.post.CreatePostDto;
 import ru.yandex.practicum.dto.post.PostDto;
-import ru.yandex.practicum.dto.post.UpdatePostDto;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
