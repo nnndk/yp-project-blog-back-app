@@ -8,4 +8,6 @@ public interface PostProviderService {
     PaginatedPostListDto searchPostsPaginated(String search, int pageNumber, int pageSize);
 
     PostDto getPostById(long id);
+
+    void ensurePostExist(long postId);
 }

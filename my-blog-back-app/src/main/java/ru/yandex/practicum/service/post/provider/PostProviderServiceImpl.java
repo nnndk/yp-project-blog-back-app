@@ -71,4 +71,11 @@ public class PostProviderServiceImpl implements PostProviderService {
 
         return PostDto.fromModel(post, tags, commentsCount);
     }
+
+    @Override
+    public void ensurePostExist(long postId) {
+        if (!postRepository.postWithIdExist(postId)) {
+            throw new PostNotFountException(postId);
+        }
+    }
 }

@@ -2,14 +2,12 @@ package ru.yandex.practicum.service.post.editor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.dto.post.CreatePostDto;
-import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
-import ru.yandex.practicum.dto.post.PostDto;
-import ru.yandex.practicum.dto.post.UpdatePostDto;
-import ru.yandex.practicum.exceptions.post.PostNotFountException;
+import ru.yandex.practicum.dto.post.*;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
+import ru.yandex.practicum.repository.post.tag.TagRepository;
+import ru.yandex.practicum.service.post.provider.PostProviderService;
 
 import java.util.List;
 
@@ -17,7 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostEditorServiceImpl implements PostEditorService {
 
+    private final PostProviderService postProviderService;
     private final PostRepository postRepository;
+    private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
 
 
@@ -26,8 +26,8 @@ public class PostEditorServiceImpl implements PostEditorService {
         CreatePostDto postDto = new CreatePostDto(dto.title(), dto.text());
         Post post = postRepository.createPost(postDto);
 
-        postRepository.addTagsToPost(post, dto.tags());
-        List<String> tags = postRepository.getPostTags(post.getId());
+        tagRepository.addTagsToPost(post, dto.tags());
+        List<String> tags = tagRepository.getPostTags(post.getId());
         int commentsCount = commentRepository.getPostCommentsCount(post.getId());
 
         return new PostDto(
@@ -41,27 +41,25 @@ public class PostEditorServiceImpl implements PostEditorService {
     }
 
     @Override
-    public PostDto updatePost(long id, UpdatePostDto dto) {
-        ensurePostExist(id);
-        return postRepository.updatePost(id, dto);
+    public PostDto updatePost(long id, UpdatePostWithTagsDto dto) {
+        postProviderService.ensurePostExist(id);
+        UpdatePostDto postDto = new UpdatePostDto(dto.id(), dto.title(), dto.text());
+
+        postRepository.updatePost(id, postDto);
+        tagRepository.updatePostTags(id, dto.tags());
+
+        return postProviderService.getPostById(id);
     }
 
     @Override
     public void deletePostById(long id) {
-        ensurePostExist(id);
+        postProviderService.ensurePostExist(id);
         postRepository.deletePost(id);
     }
 
     @Override
     public int incrementPostLikesById(long id) {
-        ensurePostExist(id);
+        postProviderService.ensurePostExist(id);
         return postRepository.incrementPostLikes(id);
-    }
-
-
-    private void ensurePostExist(long postId) {
-        if (!postRepository.postWithIdExist(postId)) {
-            throw new PostNotFountException(postId);
-        }
     }
 }
