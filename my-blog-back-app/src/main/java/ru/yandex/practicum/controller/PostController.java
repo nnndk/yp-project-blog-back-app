@@ -10,6 +10,7 @@ import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
+import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.service.post.editor.PostEditorService;
 import ru.yandex.practicum.service.post.image.PostImageService;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
@@ -35,7 +36,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     public PostDto getPostById(@PathVariable("id") long id) {
-        return postProviderService.getPostById(id);
+        Post post = postProviderService.getPostById(id);
+        return postProviderService.getRichPostById(post);
     }
 
     @PostMapping
@@ -48,18 +50,22 @@ public class PostController {
             @PathVariable("id") long id,
             @RequestBody UpdatePostWithTagsDto dto
     ) {
-        return postEditorService.updatePost(id, dto);
+        Post post = postProviderService.getPostById(id);
+        return postEditorService.updatePost(post, dto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable("id") long id) {
-        postEditorService.deletePostById(id);
+        Post post = postProviderService.getPostById(id);
+        postEditorService.deletePostById(post);
+
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/id}/likes")
     public int incrementPostLikes(@PathVariable("id") long id) {
-        return postEditorService.incrementPostLikesById(id);
+        Post post = postProviderService.getPostById(id);
+        return postEditorService.incrementPostLikesById(post);
     }
 
     @GetMapping("/{id}/image")

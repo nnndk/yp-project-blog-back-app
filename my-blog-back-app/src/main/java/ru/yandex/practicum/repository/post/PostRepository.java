@@ -12,8 +12,6 @@ import java.util.Optional;
 
 public interface PostRepository {
 
-    boolean postWithIdExist(long id);
-
     Optional<Post> findPostById(long id);
 
     long countSearchedPosts(String searchText);

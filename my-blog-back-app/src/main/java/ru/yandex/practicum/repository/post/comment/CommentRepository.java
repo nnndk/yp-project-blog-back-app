@@ -15,7 +15,7 @@ public interface CommentRepository {
 
     int getPostCommentsCount(long postId);
 
-    List<CommentDto> findAllPostComments(PostDto post);
+    List<CommentDto> findAllPostComments(long postId);
 
     Optional<CommentDto> findCommentByPostIdByCommentId(long postId, long commentId);
 

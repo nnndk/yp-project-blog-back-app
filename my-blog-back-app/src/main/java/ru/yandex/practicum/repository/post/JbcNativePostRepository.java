@@ -6,16 +6,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dto.post.CreatePostDto;
-import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
-import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
 import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.repository.post.tag.TagRepository;
 import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,13 +23,8 @@ public class JbcNativePostRepository implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final DateTimeTools dateTimeTools;
+    private final TagRepository tagRepository;
 
-
-    @Override
-    public boolean postWithIdExist(long id) {
-        // todo
-        return false;
-    }
 
     @Override
     public Optional<Post> findPostById(long id) {
@@ -110,6 +105,8 @@ public class JbcNativePostRepository implements PostRepository {
 
     @Override
     public void updatePost(long id, UpdatePostDto dto) {
+        List<String> tagsAsIs = tagRepository.getPostTags(id);
+
         OffsetDateTime now = dateTimeTools.getCurrentDateTime();
 
         jdbcTemplate.update("update posts set title = ?, text = ?, modified_at = ? where id = ?",

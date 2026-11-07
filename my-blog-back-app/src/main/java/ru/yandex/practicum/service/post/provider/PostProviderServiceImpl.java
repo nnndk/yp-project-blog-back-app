@@ -8,19 +8,28 @@ import ru.yandex.practicum.exceptions.post.PostNotFountException;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
+import ru.yandex.practicum.repository.post.tag.TagRepository;
+import ru.yandex.practicum.service.post.tag.TagService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PostProviderServiceImpl implements PostProviderService {
 
+    private final TagService tagService;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
+
+    @Override
+    public Post getPostById(long id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("`id` cannot be less than 1");
+        }
+
+        return postRepository.findPostById(id).orElseThrow(() -> new PostNotFountException(id));
+    }
 
     @Override
     public PaginatedPostListDto searchPostsPaginated(String search, int pageNumber, int pageSize) {
@@ -49,7 +58,7 @@ public class PostProviderServiceImpl implements PostProviderService {
         } else {
             posts = postRepository.searchPostsByTextPaginated(search, offset, pageSize);
             long[] postIds = posts.stream().mapToLong(Post::getId).toArray();
-            tags = postRepository.getPostTags(postIds);
+            tags = tagService.getPostTags(posts);
             commentsCount = commentRepository.getPostCommentsCount(postIds);
         }
 
@@ -62,20 +71,10 @@ public class PostProviderServiceImpl implements PostProviderService {
     }
 
     @Override
-    public PostDto getPostById(long id) {
-        Post post = postRepository.findPostById(id)
-                .orElseThrow(() -> new PostNotFountException(id));
-
-        List<String> tags = postRepository.getPostTags(id);
-        int commentsCount = commentRepository.getPostCommentsCount(id);
+    public PostDto getRichPostById(Post post) {
+        List<String> tags = tagService.getPostTags(post);
+        int commentsCount = commentRepository.getPostCommentsCount(post.getId());
 
         return PostDto.fromModel(post, tags, commentsCount);
-    }
-
-    @Override
-    public void ensurePostExist(long postId) {
-        if (!postRepository.postWithIdExist(postId)) {
-            throw new PostNotFountException(postId);
-        }
     }
 }

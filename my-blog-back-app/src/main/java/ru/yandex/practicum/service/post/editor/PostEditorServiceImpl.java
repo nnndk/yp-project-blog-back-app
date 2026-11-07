@@ -6,8 +6,8 @@ import ru.yandex.practicum.dto.post.*;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
-import ru.yandex.practicum.repository.post.tag.TagRepository;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
+import ru.yandex.practicum.service.post.tag.TagService;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class PostEditorServiceImpl implements PostEditorService {
 
     private final PostProviderService postProviderService;
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
     private final CommentRepository commentRepository;
 
 
@@ -26,8 +26,8 @@ public class PostEditorServiceImpl implements PostEditorService {
         CreatePostDto postDto = new CreatePostDto(dto.title(), dto.text());
         Post post = postRepository.createPost(postDto);
 
-        tagRepository.addTagsToPost(post, dto.tags());
-        List<String> tags = tagRepository.getPostTags(post.getId());
+        tagService.addTagsToPost(post, dto.tags());
+        List<String> tags = tagService.getPostTags(post);
         int commentsCount = commentRepository.getPostCommentsCount(post.getId());
 
         return new PostDto(
@@ -41,25 +41,22 @@ public class PostEditorServiceImpl implements PostEditorService {
     }
 
     @Override
-    public PostDto updatePost(long id, UpdatePostWithTagsDto dto) {
-        postProviderService.ensurePostExist(id);
+    public PostDto updatePost(Post post, UpdatePostWithTagsDto dto) {
         UpdatePostDto postDto = new UpdatePostDto(dto.id(), dto.title(), dto.text());
 
-        postRepository.updatePost(id, postDto);
-        tagRepository.updatePostTags(id, dto.tags());
+        postRepository.updatePost(post.getId(), postDto);
+        tagService.updatePostTags(post, dto.tags());
 
-        return postProviderService.getPostById(id);
+        return postProviderService.getRichPostById(post);
     }
 
     @Override
-    public void deletePostById(long id) {
-        postProviderService.ensurePostExist(id);
-        postRepository.deletePost(id);
+    public void deletePostById(Post post) {
+        postRepository.deletePost(post.getId()); // комментарии и связи с тегами поста удаляются каскадно
     }
 
     @Override
-    public int incrementPostLikesById(long id) {
-        postProviderService.ensurePostExist(id);
-        return postRepository.incrementPostLikes(id);
+    public int incrementPostLikesById(Post post) {
+        return postRepository.incrementPostLikes(post.getId());
     }
 }

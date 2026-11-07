@@ -3,12 +3,14 @@ package ru.yandex.practicum.service.post.comment.editor;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
+import ru.yandex.practicum.model.Comment;
+import ru.yandex.practicum.model.Post;
 
 public interface CommentEditorService {
 
-    CommentDto createPostComment(long postId, CreateCommentDto dto);
+    CommentDto createPostComment(Post post, CreateCommentDto dto);
 
-    CommentDto updatePostComment(long postId, long commentId, UpdateCommentDto dto);
+    CommentDto updatePostComment(Post post, Comment comment, UpdateCommentDto dto);
 
-    void deletePostCommentById(long postId, long commentId);
+    void deletePostCommentById(Post post, Comment comment);
 }

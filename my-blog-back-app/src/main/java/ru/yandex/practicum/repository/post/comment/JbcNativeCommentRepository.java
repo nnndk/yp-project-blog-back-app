@@ -56,7 +56,7 @@ public class JbcNativeCommentRepository implements CommentRepository {
     }
 
     @Override
-    public List<CommentDto> findAllPostComments(PostDto post) {
+    public List<CommentDto> findAllPostComments(long postId) {
         return List.of();
     }
 
