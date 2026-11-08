@@ -4,7 +4,6 @@ create table if not exists tags(
     created_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
 );
 
-
 create table if not exists posts(
     id bigserial primary key,
     title varchar(100) not null,
@@ -29,6 +28,15 @@ create table if not exists comments(
     created_at timestamp with time zone not null,
     modified_at timestamp with time zone not null,
     constraint fk_comments_post foreign key (post_id) references posts(id) on delete cascade
+);
+
+create table if not exists post_images(
+    id bigint primary key,
+    origin_filename varchar(100) not null,
+
+    created_at timestamp with time zone not null,
+    modified_at timestamp with time zone not null,
+    constraint fk_comments_post foreign key (id) references posts(id) on delete cascade
 );
 
 

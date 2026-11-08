@@ -71,7 +71,8 @@ public class PostController {
     @GetMapping("/{id}/image")
     public ResponseEntity<Resource> getPostImageById(@PathVariable("id") long id) {
         // надо проверить, что конкретно требует фронт. Правильно ли я вернул или надо именно byte[]?
-        Resource image = postImageService.getPostImageById(id);
+        Post post = postProviderService.getPostById(id);
+        Resource image = postImageService.getPostImage(post);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(image);
@@ -82,7 +83,8 @@ public class PostController {
             @PathVariable("id") long id,
             @RequestParam("image") MultipartFile image
     ) {
-        postImageService.updatePostImageById(id, image);
+        Post post = postProviderService.getPostById(id);
+        postImageService.updatePostImage(post, image);
         return ResponseEntity.ok().build();
     }
 }

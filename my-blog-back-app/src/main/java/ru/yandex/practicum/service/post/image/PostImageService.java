@@ -2,10 +2,11 @@ package ru.yandex.practicum.service.post.image;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
+import ru.yandex.practicum.model.Post;
 
 public interface PostImageService {
 
-    Resource getPostImageById(long id);
+    Resource getPostImage(Post post);
 
-    void updatePostImageById(long id, MultipartFile imageFile);
+    void updatePostImage(Post post, MultipartFile imageFile);
 }
