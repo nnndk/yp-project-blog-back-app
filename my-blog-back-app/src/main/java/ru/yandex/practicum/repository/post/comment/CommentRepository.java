@@ -1,9 +1,8 @@
 package ru.yandex.practicum.repository.post.comment;
 
-import ru.yandex.practicum.dto.post.PostDto;
-import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
+import ru.yandex.practicum.model.Comment;
 
 import java.util.List;
 import java.util.Map;
@@ -11,19 +10,17 @@ import java.util.Optional;
 
 public interface CommentRepository {
 
-    Map<Long, Integer> getPostCommentsCount(long[] postIds);
+    Optional<Comment> findCommentByPostIdByCommentId(long postId, long commentId);
 
-    int getPostCommentsCount(long postId);
+    List<Comment> findAllPostComments(long postId);
 
-    List<CommentDto> findAllPostComments(long postId);
+    int countPostComments(long postId);
 
-    Optional<CommentDto> findCommentByPostIdByCommentId(long postId, long commentId);
+    Map<Long, Integer> countPostComments(long[] postIds);
 
-    boolean commentWithIdInPostExist(long postId, long commentId);
+    Comment createPostComment(long postId, CreateCommentDto dto);
 
-    CommentDto createPostComment(long postId, CreateCommentDto dto);
-
-    CommentDto updatePostComment(long postId, long commentId, UpdateCommentDto dto);
+    Comment updatePostComment(long postId, long commentId, UpdateCommentDto dto);
 
     void deleteCommentByPostIdByCommentId(long postId, long commentId);
 }

@@ -8,7 +8,6 @@ import ru.yandex.practicum.exceptions.post.PostNotFountException;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
-import ru.yandex.practicum.repository.post.tag.TagRepository;
 import ru.yandex.practicum.service.post.tag.TagService;
 
 import java.util.*;
@@ -59,7 +58,7 @@ public class PostProviderServiceImpl implements PostProviderService {
             posts = postRepository.searchPostsByTextPaginated(search, offset, pageSize);
             long[] postIds = posts.stream().mapToLong(Post::getId).toArray();
             tags = tagService.getPostTags(posts);
-            commentsCount = commentRepository.getPostCommentsCount(postIds);
+            commentsCount = commentRepository.countPostComments(postIds);
         }
 
         return new PaginatedPostListDto(
@@ -73,7 +72,7 @@ public class PostProviderServiceImpl implements PostProviderService {
     @Override
     public PostDto getRichPostById(Post post) {
         List<String> tags = tagService.getPostTags(post);
-        int commentsCount = commentRepository.getPostCommentsCount(post.getId());
+        int commentsCount = commentRepository.countPostComments(post.getId());
 
         return PostDto.fromModel(post, tags, commentsCount);
     }

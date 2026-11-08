@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dto.post.CreatePostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
 import ru.yandex.practicum.model.Post;
-import ru.yandex.practicum.repository.post.tag.TagRepository;
 import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.sql.PreparedStatement;
@@ -23,7 +22,6 @@ public class JbcNativePostRepository implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final DateTimeTools dateTimeTools;
-    private final TagRepository tagRepository;
 
 
     @Override
@@ -105,21 +103,42 @@ public class JbcNativePostRepository implements PostRepository {
 
     @Override
     public void updatePost(long id, UpdatePostDto dto) {
-        List<String> tagsAsIs = tagRepository.getPostTags(id);
-
         OffsetDateTime now = dateTimeTools.getCurrentDateTime();
-
         jdbcTemplate.update("update posts set title = ?, text = ?, modified_at = ? where id = ?",
                 dto.title(), dto.text(), now,  id);
     }
 
     @Override
     public void deletePost(long id) {
-
+        // комменты и теги удалятся каскадно базой данных
+        jdbcTemplate.update("delete from posts where id = ?", id);
     }
 
     @Override
     public int incrementPostLikes(long id) {
-        return 0;
+        OffsetDateTime now = dateTimeTools.getCurrentDateTime();
+        jdbcTemplate.update(
+                "update posts set likes_count = likes_count + 1, modified_at = ? where id = ?",
+                now,  id);
+
+        return getPostLikesCount(id);
+    }
+
+    private int getPostLikesCount(long id) {
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "select likes_count from posts where id = ?",
+                        Integer.class,
+                        id
+                )
+            )
+            .orElseThrow(
+                    () -> new IllegalStateException(
+                            String.format(
+                                    "Failed to get likes_count for post with id = `%d`",
+                                    id
+                            )
+                    )
+            );
     }
 }

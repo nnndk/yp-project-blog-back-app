@@ -38,7 +38,7 @@ public class PostCommentController {
             @PathVariable("commentId") long commentId
     ) {
         Post post = postProviderService.getPostById(postId);
-        return commentProviderService.getPostCommentDtoById(post, commentId);
+        return commentProviderService.getPostCommentById(post, commentId);
     }
 
     @PostMapping("/{postId}/comments")
@@ -57,7 +57,7 @@ public class PostCommentController {
             @RequestBody UpdateCommentDto dto
     ) {
         Post post = postProviderService.getPostById(postId);
-        Comment comment = commentProviderService.getPostCommentById(post, commentId);
+        Comment comment = commentProviderService.getPostCommentModelById(post, commentId);
         return commentEditorService.updatePostComment(post, comment, dto);
     }
 
@@ -67,7 +67,8 @@ public class PostCommentController {
             @PathVariable("commentId") long commentId
     ) {
         Post post = postProviderService.getPostById(postId);
-        Comment comment = commentProviderService.getPostCommentById(post, commentId);
+        Comment comment = commentProviderService.getPostCommentModelById(post, commentId);
+
         commentEditorService.deletePostCommentById(post, comment);
         return ResponseEntity.ok().build();
     }

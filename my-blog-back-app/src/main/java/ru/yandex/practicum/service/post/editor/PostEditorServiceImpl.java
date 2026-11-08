@@ -28,7 +28,7 @@ public class PostEditorServiceImpl implements PostEditorService {
 
         tagService.addTagsToPost(post, dto.tags());
         List<String> tags = tagService.getPostTags(post);
-        int commentsCount = commentRepository.getPostCommentsCount(post.getId());
+        int commentsCount = commentRepository.countPostComments(post.getId());
 
         return new PostDto(
                 post.getId(),

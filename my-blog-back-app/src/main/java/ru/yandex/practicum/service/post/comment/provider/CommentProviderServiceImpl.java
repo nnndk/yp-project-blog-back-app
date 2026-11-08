@@ -18,23 +18,20 @@ public class CommentProviderServiceImpl implements CommentProviderService {
 
 
     @Override
-    public List<CommentDto> getPostComments(Post post) {
-        return commentRepository.findAllPostComments(post.getId());
-    }
-
-    @Override
-    public CommentDto getPostCommentDtoById(Post post, long commentId) {
+    public Comment getPostCommentModelById(Post post, long commentId) {
         return commentRepository.findCommentByPostIdByCommentId(post.getId(), commentId)
                 .orElseThrow(() -> new CommentNotFountException(post.getId(), commentId));
     }
 
     @Override
-    public Comment getPostCommentById(Post post, long commentId) {
-        CommentDto dto = getPostCommentDtoById(post, commentId);
-        return new Comment(
-                dto.id(),
-                dto.text(),
-                dto.postId()
-        );
+    public List<CommentDto> getPostComments(Post post) {
+        List<Comment> commentModels =  commentRepository.findAllPostComments(post.getId());
+        return CommentDto.fromModelList(commentModels);
+    }
+
+    @Override
+    public CommentDto getPostCommentById(Post post, long commentId) {
+        Comment commentModel = getPostCommentModelById(post, commentId);
+        return CommentDto.fromModel(commentModel);
     }
 }

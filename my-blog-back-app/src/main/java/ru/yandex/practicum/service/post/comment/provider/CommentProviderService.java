@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface CommentProviderService {
 
+    Comment getPostCommentModelById(Post post, long commentId);
+
     List<CommentDto> getPostComments(Post post);
 
-    CommentDto getPostCommentDtoById(Post post, long commentId);
-
-    Comment getPostCommentById(Post post, long commentId);
+    CommentDto getPostCommentById(Post post, long commentId);
 }
