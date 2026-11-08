@@ -1,4 +1,4 @@
-package ru.yandex.practicum.service.file.name;
+package ru.yandex.practicum.service.storage.name;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;

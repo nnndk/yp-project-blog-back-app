@@ -1,6 +1,6 @@
 package ru.yandex.practicum.dto.post;
 
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 
 import java.util.ArrayList;
 import java.util.List;

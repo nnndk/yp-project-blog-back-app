@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.exceptions.post.PostNotFountException;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.service.post.tag.TagService;

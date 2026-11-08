@@ -1,53 +1,64 @@
-package ru.yandex.practicum.service.file;
+package ru.yandex.practicum.service.storage;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.yandex.practicum.exceptions.file.DirectoryNotFountException;
 import ru.yandex.practicum.exceptions.file.FileNotFountException;
-import ru.yandex.practicum.service.file.name.UniqueFileNameService;
+import ru.yandex.practicum.service.storage.name.UniqueFileNameService;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
-@Service
-@Primary
 public class LocalFileStorageService implements FileStorageService {
 
-    private final Path storageRoot;
+    private final Path storageRootPath;
+    private final String bucketDirName;
+    private final Path bucketPath;
 
     private final UniqueFileNameService uniqueFileNameService;
 
 
     public LocalFileStorageService(
-            @Value("${storage.local}") String storageDir,
+            Path storageRootPath,
+            String bucketDirName,
             UniqueFileNameService uniqueFileNameService
     ) {
-        this.storageRoot = Paths.get(storageDir).toAbsolutePath().normalize();
+        this.storageRootPath = storageRootPath;
+        this.bucketDirName = bucketDirName;
+        this.bucketPath = storageRootPath.resolve(bucketDirName).normalize();
+
         this.uniqueFileNameService = uniqueFileNameService;
+
+        validateBucketName();
+        ensureBucketExists();
     }
 
+    private void validateBucketName() {
+        if (bucketDirName == null || !bucketDirName.matches("[a-zA-Z0-9_-]+")) {
+            throw new IllegalArgumentException(
+                    "Invalid bucket dir name in config: " + bucketDirName);
+        }
+    }
 
-    @Override
-    public boolean isBucketExists(String bucket) {
-        return Files.isDirectory(getBucketPath(bucket));
+    private void ensureBucketExists() {
+        if (!Files.isDirectory(bucketPath)) {
+            throw new DirectoryNotFountException(bucketDirName, storageRootPath.toString());
+        }
     }
 
     @Override
-    public boolean isFileExists(String bucket, String filename) {
-        Path file = getFilePath(bucket, filename);
+    public boolean isFileExists(String filename) {
+        Path file = getFilePath(filename);
         return Files.isRegularFile(file);
     }
 
     @Override
-    public Optional<Resource> getFile(String bucket, String filename) {
-        Path filePath = getFilePath(bucket, filename);
+    public Optional<Resource> getFile(String filename) {
+        Path filePath = getFilePath(filename);
         if (!Files.isRegularFile(filePath)) {
             return Optional.empty();
         }
@@ -61,8 +72,7 @@ public class LocalFileStorageService implements FileStorageService {
     }
 
     @Override
-    public String saveFile(String bucket, MultipartFile file) {
-        Path bucketPath = getBucketPath(bucket);
+    public String saveFile(MultipartFile file) {
         String uniqueFileName = uniqueFileNameService.generateFileName();
         Path pathToSaveFile =  bucketPath.resolve(uniqueFileName).normalize();
 
@@ -70,15 +80,15 @@ public class LocalFileStorageService implements FileStorageService {
             file.transferTo(pathToSaveFile);
             return uniqueFileName;
         } catch (IOException e) {
-            throw new UncheckedIOException(String.format("Failed to save file to bucket `%s`", bucket), e);
+            throw new UncheckedIOException(String.format("Failed to save file to bucket `%s`", bucketDirName), e);
         }
     }
 
     @Override
-    public void deleteFile(String bucket, String filename) {
-        Path filePath = getFilePath(bucket, filename);
+    public void deleteFile(String filename) {
+        Path filePath = getFilePath(filename);
         if (!Files.isRegularFile(filePath)) {
-            throw new FileNotFountException(bucket, filename);
+            throw new FileNotFountException(bucketDirName, filename);
         }
 
         try {
@@ -88,24 +98,11 @@ public class LocalFileStorageService implements FileStorageService {
         }
     }
 
-    private Path getBucketPath(String bucket) {
-        if (bucket == null || bucket.isBlank()) {
-            throw new IllegalArgumentException("Invalid bucket name: " + bucket);
-        }
-
-        return storageRoot.resolve(bucket).normalize();
-    }
-
-    private Path getFilePath(String bucket, String filename) {
-        Path bucketPath = getBucketPath(bucket);
-        return getFilePath(bucketPath, filename);
-    }
-
-    private Path getFilePath(Path bucket, String filename) {
+    private Path getFilePath(String filename) {
         if (filename == null || filename.isBlank()) {
             throw new IllegalArgumentException("Invalid filename: " + filename);
         }
 
-        return bucket.resolve(filename).normalize();
+        return bucketPath.resolve(filename).normalize();
     }
 }

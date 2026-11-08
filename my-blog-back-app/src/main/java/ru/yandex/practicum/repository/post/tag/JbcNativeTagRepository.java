@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.model.Tag;
+import ru.yandex.practicum.model.post.Tag;
 import ru.yandex.practicum.tools.ArrayDiffTools;
 import ru.yandex.practicum.tools.DateTimeTools;
 

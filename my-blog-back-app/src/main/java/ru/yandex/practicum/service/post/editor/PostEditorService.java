@@ -3,7 +3,7 @@ package ru.yandex.practicum.service.post.editor;
 import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 
 public interface PostEditorService {
 

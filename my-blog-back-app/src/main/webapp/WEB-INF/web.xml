@@ -25,4 +25,18 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>H2Console</servlet-name>
+        <servlet-class>org.h2.server.web.JakartaWebServlet</servlet-class>
+        <init-param>
+            <param-name>-webAllowOthers</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>H2Console</servlet-name>
+        <url-pattern>/h2-console/*</url-pattern>
+    </servlet-mapping>
 </web-app>

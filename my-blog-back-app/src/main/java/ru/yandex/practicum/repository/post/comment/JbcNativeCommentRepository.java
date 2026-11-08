@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
-import ru.yandex.practicum.model.Comment;
+import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.sql.PreparedStatement;
@@ -26,7 +26,7 @@ public class JbcNativeCommentRepository implements CommentRepository {
     @Override
     public Optional<Comment> findCommentByPostIdByCommentId(long postId, long commentId) {
         return Optional.ofNullable(jdbcTemplate.queryForObject("""
-                    select id, text, post_id from posts
+                    select id, text, post_id from comments
                     where post_id = ? and id = ?
                 """,
                 (rs, rowNum) -> new Comment(
@@ -42,7 +42,7 @@ public class JbcNativeCommentRepository implements CommentRepository {
     @Override
     public List<Comment> findAllPostComments(long postId) {
         return jdbcTemplate.query("""
-                    select id, text, post_id from posts
+                    select id, text, post_id from comments
                     where post_id = ?
                     order by id
                 """,

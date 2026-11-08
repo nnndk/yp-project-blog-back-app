@@ -42,6 +42,7 @@ public class DataSourceConfiguration {
 
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("schema.sql"));
+        populator.setSqlScriptEncoding("UTF-8");
         populator.execute(dataSource);
     }
 }

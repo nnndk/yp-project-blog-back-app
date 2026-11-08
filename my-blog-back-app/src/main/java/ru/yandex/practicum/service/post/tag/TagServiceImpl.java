@@ -2,7 +2,7 @@ package ru.yandex.practicum.service.post.tag;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.model.common.tools.ArrayDiff;
 import ru.yandex.practicum.repository.post.tag.TagRepository;
 import ru.yandex.practicum.tools.ArrayDiffTools;

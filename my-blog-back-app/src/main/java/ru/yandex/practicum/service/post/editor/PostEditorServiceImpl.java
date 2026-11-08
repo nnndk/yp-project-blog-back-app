@@ -3,9 +3,10 @@ package ru.yandex.practicum.service.post.editor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.post.*;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
+import ru.yandex.practicum.service.post.image.PostImageService;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.tag.TagService;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class PostEditorServiceImpl implements PostEditorService {
 
     private final PostProviderService postProviderService;
+    private final PostImageService postImageService;
     private final PostRepository postRepository;
     private final TagService tagService;
     private final CommentRepository commentRepository;
@@ -52,6 +54,7 @@ public class PostEditorServiceImpl implements PostEditorService {
 
     @Override
     public void deletePostById(Post post) {
+        postImageService.deletePostImage(post);
         postRepository.deletePost(post.getId()); // комментарии и связи с тегами поста удаляются каскадно
     }
 

@@ -1,3 +1,9 @@
+drop table if exists post_images;
+drop table if exists comments;
+drop table if exists posts_tags_link;
+drop table if exists posts;
+drop table if exists tags;
+
 create table if not exists tags(
     id bigserial primary key,
     tag varchar(20) unique not null,
@@ -25,27 +31,27 @@ create table if not exists comments(
     id bigserial primary key,
     text varchar(2000) not null,
     post_id bigint not null,
-    created_at timestamp with time zone not null,
-    modified_at timestamp with time zone not null,
+    created_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+    modified_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
     constraint fk_comments_post foreign key (post_id) references posts(id) on delete cascade
 );
 
 create table if not exists post_images(
-    id bigint primary key,
+    post_id bigint primary key,
     origin_filename varchar(100) not null,
-
-    created_at timestamp with time zone not null,
-    modified_at timestamp with time zone not null,
-    constraint fk_comments_post foreign key (id) references posts(id) on delete cascade
+    storage_file_id varchar(36) not null,
+    created_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+    modified_at timestamp with time zone not null default CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+    constraint fk_post_images_post foreign key (post_id) references posts(id) on delete cascade
 );
 
 
-insert into tags(tag, created_at)
+insert into tags(tag)
 values
     ('tag_1'),
     ('tag_2');
 
-insert into posts(title, text, likes_count, created_at, modified_at)
+insert into posts(title, text)
 values
     ('Название поста 1', 'Текст поста в формате Markdown...'),
     ('Название поста 2', 'Текст поста в формате Markdown...'),
@@ -58,7 +64,7 @@ values
     (3, 1),
     (3, 2);
 
-insert into comments(text, post_id, created_at, modified_at)
+insert into comments(text, post_id)
 values
     ('Комментарий к посту 1', 1),
     ('Ещё один комментарий к посту 1', 1);

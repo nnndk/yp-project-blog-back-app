@@ -1,6 +1,6 @@
 package ru.yandex.practicum.dto.post.comment;
 
-import ru.yandex.practicum.model.Comment;
+import ru.yandex.practicum.model.post.Comment;
 
 import java.util.ArrayList;
 import java.util.List;

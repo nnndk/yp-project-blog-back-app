@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
-import ru.yandex.practicum.model.Comment;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Comment;
+import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.service.post.comment.editor.CommentEditorService;
 import ru.yandex.practicum.service.post.comment.provider.CommentProviderService;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
@@ -26,7 +26,7 @@ public class PostCommentController {
 
     @GetMapping("/{postId}/comments")
     public List<CommentDto> getPostComments(
-            @PathVariable("postId") long postId
+            @PathVariable("postId") Long postId
     ) {
         Post post = postProviderService.getPostById(postId);
         return commentProviderService.getPostComments(post);
@@ -61,7 +61,7 @@ public class PostCommentController {
         return commentEditorService.updatePostComment(post, comment, dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable("postId") long postId,
             @PathVariable("commentId") long commentId

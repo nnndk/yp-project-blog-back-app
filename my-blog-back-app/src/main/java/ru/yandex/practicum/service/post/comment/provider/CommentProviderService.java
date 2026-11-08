@@ -1,8 +1,8 @@
 package ru.yandex.practicum.service.post.comment.provider;
 
 import ru.yandex.practicum.dto.post.comment.CommentDto;
-import ru.yandex.practicum.model.Comment;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Comment;
+import ru.yandex.practicum.model.post.Post;
 
 import java.util.List;
 

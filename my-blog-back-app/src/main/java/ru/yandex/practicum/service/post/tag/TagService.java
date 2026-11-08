@@ -1,6 +1,6 @@
 package ru.yandex.practicum.service.post.tag;
 
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 
 import java.util.List;
 import java.util.Map;

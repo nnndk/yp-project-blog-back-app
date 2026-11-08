@@ -10,7 +10,7 @@ import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.service.post.editor.PostEditorService;
 import ru.yandex.practicum.service.post.image.PostImageService;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
@@ -31,6 +31,10 @@ public class PostController {
             @RequestParam int pageNumber,
             @RequestParam int pageSize
     ) {
+        if (search == null) {
+            search = "";
+        }
+
         return postProviderService.searchPostsPaginated(search, pageNumber, pageSize);
     }
 
@@ -62,7 +66,7 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/id}/likes")
+    @PostMapping("/{id}/likes")
     public int incrementPostLikes(@PathVariable("id") long id) {
         Post post = postProviderService.getPostById(id);
         return postEditorService.incrementPostLikesById(post);

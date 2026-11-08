@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dto.post.CreatePostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.sql.PreparedStatement;
@@ -42,10 +42,20 @@ public class JbcNativePostRepository implements PostRepository {
 
     @Override
     public long countSearchedPosts(String searchText) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(
-                "select count(*) from posts where text ilike ?",
+        String searchTextForQuery = prepareSearchTextForQuery(searchText, true);
+        return Optional.ofNullable(jdbcTemplate.queryForObject("""
+                            select count(*)
+                            from posts p
+                                left join posts_tags_link ptl
+                                on p.id = ptl.post_id
+                                    left join tags t
+                                    on ptl.tag_id = t.id
+                            where p.title like ? or p.text like ? or t.tag like ?
+                        """,
                 Long.class,
-                "%" + searchText + "%"
+                searchTextForQuery,
+                searchTextForQuery,
+                searchTextForQuery
         )).orElse(0L);
     }
 
@@ -58,10 +68,17 @@ public class JbcNativePostRepository implements PostRepository {
             throw new IllegalArgumentException("`limit` cannot be less than 1");
         }
 
+        String searchTextForQuery = prepareSearchTextForQuery(searchText, true);
+
         return jdbcTemplate.query("""
-                    select id, title, text, likes_count from posts
-                    where text ilike ?
-                    order by id
+                    select distinct p.id, p.title, p.text, p.likes_count
+                    from posts p
+                        left join posts_tags_link ptl
+                        on p.id = ptl.post_id
+                            left join tags t
+                            on ptl.tag_id = t.id
+                    where p.title like ? or p.text like ? or t.tag like ?
+                    order by p.id
                     limit ?
                     offset ?
                 """,
@@ -71,7 +88,9 @@ public class JbcNativePostRepository implements PostRepository {
                         rs.getString("text"),
                         rs.getInt("likes_count")
                 ),
-                "%" + searchText + "%",
+                searchTextForQuery,
+                searchTextForQuery,
+                searchTextForQuery,
                 limit,
                 offset
         );
@@ -94,7 +113,7 @@ public class JbcNativePostRepository implements PostRepository {
             return ps;
         }, keyHolder);
 
-        long id = Optional.ofNullable(keyHolder.getKeyAs(Long.class)).orElseThrow(
+        long id = Optional.ofNullable((Long)keyHolder.getKeys().get("ID")).orElseThrow(
                 () -> new RuntimeException("Failed to get generated key"));
 
         return findPostById(id).orElseThrow(
@@ -122,6 +141,14 @@ public class JbcNativePostRepository implements PostRepository {
                 now,  id);
 
         return getPostLikesCount(id);
+    }
+
+    private String prepareSearchTextForQuery(String searchText, boolean toLower) {
+        if (toLower) {
+            return "%" + searchText.toLowerCase() + "%";
+        } else {
+            return "%" + searchText+ "%";
+        }
     }
 
     private int getPostLikesCount(long id) {
