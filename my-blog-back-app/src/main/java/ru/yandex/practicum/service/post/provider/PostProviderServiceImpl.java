@@ -46,7 +46,7 @@ public class PostProviderServiceImpl implements PostProviderService {
         List<Post> posts;
         Map<Long, List<String>> tags;
         Map<Long, Integer> commentsCount;
-        int lastPage = (int) (totalRows + pageSize - 1) / pageSize;
+        int lastPage = (int) ((totalRows + pageSize - 1) / pageSize);
         boolean hasPrev = pageNumber > 1 && pageNumber <= lastPage;
         boolean hasNext = pageNumber < lastPage;
 

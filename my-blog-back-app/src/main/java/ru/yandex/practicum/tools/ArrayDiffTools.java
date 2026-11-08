@@ -12,7 +12,6 @@ public class ArrayDiffTools {
         if (former == null || former.length == 0) {
             return List.of();
         }
-
         if (latter == null || latter.length == 0) {
             return Arrays.stream(former).toList();
         }
@@ -25,6 +24,13 @@ public class ArrayDiffTools {
     }
 
     public ArrayDiff getArrayDiff(String[] itemsAsIs, String[] itemsToBe) {
+        if (itemsAsIs == null) {
+            throw new IllegalArgumentException("`itemsAsIs` cannot be null");
+        }
+        if (itemsToBe == null) {
+            throw new IllegalArgumentException("`itemsToBe` cannot be null");
+        }
+
         Set<String> current = new HashSet<>(Arrays.asList(itemsAsIs));
         Set<String> target  = new HashSet<>(Arrays.asList(itemsToBe));
 

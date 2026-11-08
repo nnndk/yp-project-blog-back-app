@@ -3,6 +3,7 @@ package ru.yandex.practicum.service.post.editor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.post.*;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
@@ -29,14 +30,13 @@ public class PostEditorServiceImpl implements PostEditorService {
         Post post = postRepository.createPost(postDto);
 
         tagService.addTagsToPost(post, dto.tags());
-        List<String> tags = tagService.getPostTags(post);
         int commentsCount = commentRepository.countPostComments(post.getId());
 
         return new PostDto(
                 post.getId(),
                 post.getTitle(),
                 post.getText(),
-                tags.toArray(String[]::new),
+                dto.tags(),
                 post.getLikesCount(),
                 commentsCount
         );
@@ -44,7 +44,7 @@ public class PostEditorServiceImpl implements PostEditorService {
 
     @Override
     public PostDto updatePost(Post post, UpdatePostWithTagsDto dto) {
-        UpdatePostDto postDto = new UpdatePostDto(dto.id(), dto.title(), dto.text());
+        UpdatePostDto postDto = new UpdatePostDto(post.getId(), dto.title(), dto.text());
 
         postRepository.updatePost(post.getId(), postDto);
         tagService.updatePostTags(post, dto.tags());
@@ -54,7 +54,10 @@ public class PostEditorServiceImpl implements PostEditorService {
 
     @Override
     public void deletePostById(Post post) {
-        postImageService.deletePostImage(post);
+        try {
+            postImageService.deletePostImage(post);
+        } catch (PostImageNotFountException ignored) { }
+
         postRepository.deletePost(post.getId()); // комментарии и связи с тегами поста удаляются каскадно
     }
 
