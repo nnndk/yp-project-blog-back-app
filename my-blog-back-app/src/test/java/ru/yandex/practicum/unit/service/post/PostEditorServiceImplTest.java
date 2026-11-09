@@ -5,34 +5,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.dto.post.CreatePostDto;
-import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
-import ru.yandex.practicum.dto.post.PostDto;
-import ru.yandex.practicum.dto.post.UpdatePostDto;
-import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
+import ru.yandex.practicum.dto.post.*;
 import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
 import ru.yandex.practicum.model.post.Post;
-import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.repository.post.PostRepository;
+import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.service.post.editor.PostEditorService;
 import ru.yandex.practicum.service.post.image.PostImageService;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.tag.TagService;
-import ru.yandex.practicum.unit.configuration.ServiceTestConfig;
+import ru.yandex.practicum.unit.configuration.PostEditorServiceImplTestConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(ServiceTestConfig.class)
+@SpringJUnitConfig(PostEditorServiceImplTestConfig.class)
 public class PostEditorServiceImplTest {
 
     @MockitoBean
@@ -74,7 +65,7 @@ public class PostEditorServiceImplTest {
             PostDto result = service.createPost(new CreatePostWithTagsDto(title, text, tags));
 
             verify(postRepository).createPost(new CreatePostDto(title, text));
-            verify(tagService).addTagsToPost(post, aryEq(tags));
+            verify(tagService).addTagsToPost(eq(post), aryEq(tags));
             verify(commentRepository).countPostComments(postId);
             verify(tagService, never()).getPostTags(any(Post.class));
 
@@ -97,12 +88,11 @@ public class PostEditorServiceImplTest {
 
             PostDto result = service.createPost(new CreatePostWithTagsDto("title1", "text1", tags));
 
-            verify(tagService).addTagsToPost(post, aryEq(tags));
+            verify(tagService).addTagsToPost(eq(post), aryEq(tags));
             assertThat(result.tags()).isEmpty();
             assertThat(result.commentsCount()).isZero();
         }
     }
-
 
     @Nested
     class UpdatePost {
@@ -125,7 +115,7 @@ public class PostEditorServiceImplTest {
             PostDto result = service.updatePost(post, dto);
 
             verify(postRepository).updatePost(eq(postId), eq(new UpdatePostDto(postId, title, text)));
-            verify(tagService).updatePostTags(post, aryEq(tags));
+            verify(tagService).updatePostTags(eq(post), aryEq(tags));
             verify(postProviderService).getRichPostById(post);
 
             assertThat(result).isSameAs(expected);

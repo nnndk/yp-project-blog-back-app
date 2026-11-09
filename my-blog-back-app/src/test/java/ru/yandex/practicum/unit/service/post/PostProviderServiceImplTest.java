@@ -16,7 +16,7 @@ import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.tag.TagService;
-import ru.yandex.practicum.unit.configuration.ServiceTestConfig;
+import ru.yandex.practicum.unit.configuration.PostProviderServiceImplTestConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(ServiceTestConfig.class)
+@SpringJUnitConfig(PostProviderServiceImplTestConfig.class)
 public class PostProviderServiceImplTest {
 
     @MockitoBean
