@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 public class LocalFileStorageService implements FileStorageService {
 
-    private final Path storageRootPath;
     private final String bucketDirName;
     private final Path bucketPath;
 
@@ -23,38 +23,36 @@ public class LocalFileStorageService implements FileStorageService {
 
 
     public LocalFileStorageService(
-            Path storageRootPath,
+            String storageRootDirName,
             String bucketDirName,
             UniqueFileNameService uniqueFileNameService
     ) {
-        this.storageRootPath = storageRootPath;
-        this.bucketDirName = bucketDirName;
-        this.bucketPath = storageRootPath.resolve(bucketDirName).normalize();
-
         this.uniqueFileNameService = uniqueFileNameService;
 
-        validateBucketName();
-        ensureBucketExists();
+        if (storageRootDirName == null || storageRootDirName.isBlank()) {
+            throw new IllegalArgumentException("Storage root directory cannot be null or blank");
+        }
+
+        Path storageRootPath = Paths.get(storageRootDirName).toAbsolutePath().normalize();
+        validateDirName(bucketDirName);
+        this.bucketDirName = bucketDirName;
+        this.bucketPath = storageRootPath.resolve(bucketDirName).normalize();
+        ensureDirectoryExists(bucketPath, bucketDirName);
     }
 
-    private void validateBucketName() {
-        if (bucketDirName == null || !bucketDirName.matches("[a-zA-Z0-9_-]+")) {
+    private void validateDirName(String dirName) {
+        if (dirName == null || !dirName.matches("[a-zA-Z0-9_-]+")) {
             throw new IllegalArgumentException(
-                    "Invalid bucket dir name in config: " + bucketDirName);
+                    "Invalid directory name in config: " + dirName);
         }
     }
 
-    private void ensureBucketExists() {
-        if (!Files.isDirectory(bucketPath)) {
-            throw new DirectoryNotFountException(bucketDirName, storageRootPath.toString());
+    private void ensureDirectoryExists(Path path, String dirName) {
+        if (!Files.isDirectory(path)) {
+            throw new DirectoryNotFountException(dirName, path.toAbsolutePath().toString());
         }
     }
 
-    @Override
-    public boolean isFileExists(String filename) {
-        Path file = getFilePath(filename);
-        return Files.isRegularFile(file);
-    }
 
     @Override
     public Optional<Resource> getFile(String filename) {

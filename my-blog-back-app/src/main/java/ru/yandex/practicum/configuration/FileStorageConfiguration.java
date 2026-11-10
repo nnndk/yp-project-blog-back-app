@@ -7,9 +7,6 @@ import ru.yandex.practicum.service.storage.FileStorageService;
 import ru.yandex.practicum.service.storage.LocalFileStorageService;
 import ru.yandex.practicum.service.storage.name.UniqueFileNameService;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @Configuration
 public class FileStorageConfiguration {
 
@@ -19,7 +16,6 @@ public class FileStorageConfiguration {
             @Value("${storage.local.bucket.postimage}") String bucketDirName,
             UniqueFileNameService uniqueFileNameService
     ) {
-        Path storageRootPath= Paths.get(storageRootDirName).toAbsolutePath().normalize();
-        return new LocalFileStorageService(storageRootPath, bucketDirName, uniqueFileNameService);
+        return new LocalFileStorageService(storageRootDirName, bucketDirName, uniqueFileNameService);
     }
 }

@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface FileStorageService {
 
-    boolean isFileExists(String filename);
-
     Optional<Resource> getFile(String filename);
 
     String saveFile(MultipartFile file);

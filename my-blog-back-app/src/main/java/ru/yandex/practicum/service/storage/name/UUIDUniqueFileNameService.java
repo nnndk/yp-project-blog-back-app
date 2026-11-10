@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-@Primary
 @RequiredArgsConstructor
 public class UUIDUniqueFileNameService implements UniqueFileNameService {
 
