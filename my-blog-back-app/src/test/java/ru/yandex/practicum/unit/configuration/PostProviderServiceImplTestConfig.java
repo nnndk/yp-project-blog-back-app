@@ -7,16 +7,24 @@ import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.provider.PostProviderServiceImpl;
 import ru.yandex.practicum.service.post.tag.TagService;
+import ru.yandex.practicum.tools.ArrayDiffTools;
+import ru.yandex.practicum.tools.SearchTools;
 
 @Configuration
 public class PostProviderServiceImplTestConfig {
 
     @Bean
+    public SearchTools searchTools() {
+        return new SearchTools();
+    }
+
+    @Bean
     public PostProviderService postProviderService(
             TagService tagService,
             PostRepository postRepository,
-            CommentRepository commentRepository
+            CommentRepository commentRepository,
+            SearchTools searchTools
     ) {
-        return new PostProviderServiceImpl(tagService, postRepository, commentRepository);
+        return new PostProviderServiceImpl(tagService, postRepository, commentRepository, searchTools);
     }
 }

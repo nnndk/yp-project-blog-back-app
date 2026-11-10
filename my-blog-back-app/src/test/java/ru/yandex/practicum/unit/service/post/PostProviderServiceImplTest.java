@@ -68,7 +68,7 @@ public class PostProviderServiceImplTest {
         @Test
         void found_returnsPost() {
             long postId = 66L;
-            Post post = new Post(postId, "title", "text", 5);
+            Post post = new Post(postId, "title1", "text1", 5);
             when(postRepository.findPostById(postId)).thenReturn(Optional.of(post));
 
             assertThat(service.getPostById(postId)).isSameAs(post);
@@ -77,91 +77,160 @@ public class PostProviderServiceImplTest {
 
 
     @Nested
-    class SearchPostsPaginated {
+    class SearchPostsPaginatedValidation {
 
         @ParameterizedTest
         @ValueSource(ints = {0, -1, Integer.MIN_VALUE})
         void invalidPageNumber_throws(int pageNumber) {
-            assertThatThrownBy(() -> service.searchPostsPaginated(null, pageNumber, 5))
+            assertThatThrownBy(() -> service.searchPostsPaginated("q", pageNumber, 5))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("`pageNumber` cannot be less than 1");
+
+            verifyNoInteractions(postRepository, tagService, commentRepository);
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {0, -1, Integer.MIN_VALUE})
-        void invalidPageSize_throws(int pageSize) {
-            assertThatThrownBy(() -> service.searchPostsPaginated(null, 1, pageSize))
+        @ValueSource(longs = {0L, -1L, Long.MIN_VALUE})
+        void invalidPageSize_throws(long pageSize) {
+            assertThatThrownBy(() -> service.searchPostsPaginated("q", 1, pageSize))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("`pageSize` cannot be less than 1");
+
+            verifyNoInteractions(postRepository, tagService, commentRepository);
         }
+    }
+
+
+    @Nested
+    class SearchPostsPaginatedBranchTagsAndSubstring {
 
         @Test
-        void emptyPage_doesNotFetchPosts() {
-            when(postRepository.countSearchedPosts("q")).thenReturn(0L);
-
-            PaginatedPostListDto result = service.searchPostsPaginated("q", 1, 5);
-
-            verify(postRepository, never()).searchPostsByTextPaginated(any(), anyLong(), anyInt());
-            verifyNoInteractions(tagService);
-            verifyNoInteractions(commentRepository);
-            assertThat(result.getPosts()).isEmpty();
-        }
-
-        @Test
-        void nonEmptyPage_fetchesAndMapsPost() {
+        void searchesByTagsAndSubstring() {
             long postId = 66L;
             String title = "title1";
             String text = "text1";
             int likesCount = 5;
             int commentsCount = 3;
-
             Post post = new Post(postId, title, text, likesCount);
 
-            when(postRepository.countSearchedPosts("q")).thenReturn(postId);
-            when(postRepository.searchPostsByTextPaginated("q", 0L, 5))
-                    .thenReturn(List.of(post));
+            when(postRepository.countSearchedPostsByTagsAndTitleSubstring(
+                    List.of("tag_1"), "hello")).thenReturn(1L);
+            when(postRepository.searchPostsByTagsAndTitleSubstringPaginated(
+                    List.of("tag_1"), "hello", 0L, 5L)).thenReturn(List.of(post));
             when(tagService.getPostTags(List.of(post)))
-                    .thenReturn(new HashMap<>(Map.of(postId, List.of("tag_1", "tag_2"))));
+                    .thenReturn(new HashMap<>(Map.of(postId, List.of("tag_1"))));
             when(commentRepository.countPostComments(aryEq(new long[]{postId})))
                     .thenReturn(new HashMap<>(Map.of(postId, commentsCount)));
 
-            PaginatedPostListDto result = service.searchPostsPaginated("q", 1, 5);
+            PaginatedPostListDto result = service.searchPostsPaginated("#tag_1 hello", 1, 5);
 
-            verify(postRepository).searchPostsByTextPaginated("q", 0L, 5);
+            verify(postRepository).countSearchedPostsByTagsAndTitleSubstring(List.of("tag_1"), "hello");
+            verify(postRepository).searchPostsByTagsAndTitleSubstringPaginated(List.of("tag_1"), "hello", 0L, 5L);
+
             assertThat(result.getPosts()).hasSize(1);
-
             PostDto dto = result.getPosts().getFirst();
             assertThat(dto.id()).isEqualTo(postId);
-            assertThat(dto.title()).isEqualTo(title);
-            assertThat(dto.text()).isEqualTo(text);
-            assertThat(dto.likesCount()).isEqualTo(likesCount);
-            assertThat(dto.tags()).containsExactly("tag_1", "tag_2");
+            assertThat(dto.tags()).containsExactly("tag_1");
             assertThat(dto.commentsCount()).isEqualTo(commentsCount);
         }
+    }
+
+
+    @Nested
+    class SearchPostsPaginatedBranchTagsOnly {
 
         @Test
-        void postWithoutTagsAndComments_getsEmptyDefaults() {
+        void searchesByTagsOnly() {
             long postId = 66L;
-            String title = "title1";
-            String text = "text1";
-            int likesCount = 5;
+            Post post = new Post(postId, "title1", "text1", 5);
 
-            Post post = new Post(postId, title, text, likesCount);
-
-            when(postRepository.countSearchedPosts("q")).thenReturn(postId);
-            when(postRepository.searchPostsByTextPaginated("q", 0L, 5))
+            when(postRepository.countSearchedPostsByTags(List.of("tag_1", "tag_2"))).thenReturn(1L);
+            when(postRepository.searchPostsByTagsPaginated(List.of("tag_1", "tag_2"), 0L, 5L))
                     .thenReturn(List.of(post));
-            when(tagService.getPostTags(List.of(post)))
-                    .thenReturn(new HashMap<>());
+            when(tagService.getPostTags(List.of(post))).thenReturn(new HashMap<>());
             when(commentRepository.countPostComments(aryEq(new long[]{postId})))
                     .thenReturn(new HashMap<>());
 
-            PaginatedPostListDto result = service.searchPostsPaginated("q", 1, 5);
+            PaginatedPostListDto result = service.searchPostsPaginated("#tag_1 #tag_2", 1, 5);
 
-            PostDto dto = result.getPosts().getFirst();
-            assertThat(dto.tags()).isEmpty();
-            assertThat(dto.commentsCount()).isZero();
+            verify(postRepository).countSearchedPostsByTags(List.of("tag_1", "tag_2"));
+            verify(postRepository).searchPostsByTagsPaginated(List.of("tag_1", "tag_2"), 0L, 5L);
+            verify(postRepository, never()).countSearchedPostsByTitleSubstring(any());
+            verify(postRepository, never()).countAllPosts();
+
+            assertThat(result.getPosts()).hasSize(1);
         }
+    }
+
+
+    @Nested
+    class SearchPostsPaginatedBranchSubstringOnly {
+
+        @Test
+        void searchesBySubstringOnly() {
+            long postId = 66L;
+            Post post = new Post(postId, "title1", "text1", 5);
+
+            when(postRepository.countSearchedPostsByTitleSubstring("hello world")).thenReturn(1L);
+            when(postRepository.searchPostsByTitleSubstringPaginated("hello world", 0L, 5L))
+                    .thenReturn(List.of(post));
+            when(tagService.getPostTags(List.of(post))).thenReturn(new HashMap<>());
+            when(commentRepository.countPostComments(aryEq(new long[]{postId})))
+                    .thenReturn(new HashMap<>());
+
+            PaginatedPostListDto result = service.searchPostsPaginated("hello world", 1, 5);
+
+            verify(postRepository).countSearchedPostsByTitleSubstring("hello world");
+            verify(postRepository).searchPostsByTitleSubstringPaginated("hello world", 0L, 5L);
+
+            assertThat(result.getPosts()).hasSize(1);
+        }
+    }
+
+
+    @Nested
+    class SearchPostsPaginatedBranchAll {
+
+        @Test
+        void searchesAllPosts() {
+            long postId = 66L;
+            Post post = new Post(postId, "title1", "text1", 5);
+
+            when(postRepository.countAllPosts()).thenReturn(1L);
+            when(postRepository.getAllPostsPaginated(0L, 5L)).thenReturn(List.of(post));
+            when(tagService.getPostTags(List.of(post))).thenReturn(new HashMap<>());
+            when(commentRepository.countPostComments(aryEq(new long[]{postId})))
+                    .thenReturn(new HashMap<>());
+
+            PaginatedPostListDto result = service.searchPostsPaginated("", 1, 5);
+
+            verify(postRepository).countAllPosts();
+            verify(postRepository).getAllPostsPaginated(0L, 5L);
+            verify(postRepository, never()).countSearchedPostsByTags(anyList());
+
+            assertThat(result.getPosts()).hasSize(1);
+        }
+    }
+
+
+    @Nested
+    class SearchPostsPaginatedEmptyPage {
+
+        @Test
+        void emptyPage_doesNotFetchPosts() {
+            when(postRepository.countSearchedPostsByTitleSubstring("hello")).thenReturn(0L);
+
+            PaginatedPostListDto result = service.searchPostsPaginated("hello", 1, 5);
+
+            verify(postRepository, never()).searchPostsByTitleSubstringPaginated(any(), anyLong(), anyLong());
+            verifyNoInteractions(tagService, commentRepository);
+            assertThat(result.getPosts()).isEmpty();
+        }
+    }
+
+
+    @Nested
+    class SearchPostsPaginatedPagination {
 
         @ParameterizedTest
         @CsvSource({
@@ -180,17 +249,17 @@ public class PostProviderServiceImplTest {
         })
         void checkPagination(
                 int pageNumber,
-                int pageSize,
+                long pageSize,
                 long totalRows,
                 int expectedLastPage,
                 boolean expectedHasPrev,
                 boolean expectedHasNext
         ) {
-            when(postRepository.countSearchedPosts("q")).thenReturn(totalRows);
+            when(postRepository.countSearchedPostsByTitleSubstring("q")).thenReturn(totalRows);
 
             long offset = (long) (pageNumber - 1) * pageSize;
             if (offset < totalRows) {
-                when(postRepository.searchPostsByTextPaginated("q", offset, pageSize))
+                when(postRepository.searchPostsByTitleSubstringPaginated("q", offset, pageSize))
                         .thenReturn(List.of());
                 when(tagService.getPostTags(anyList())).thenReturn(new HashMap<>());
                 when(commentRepository.countPostComments(any(long[].class)))
@@ -236,14 +305,9 @@ public class PostProviderServiceImplTest {
         @Test
         void emptyTagsAndComments_returnsEmptyDefaults() {
             long postId = 66L;
-            String title = "title1";
-            String text = "text1";
-            int likesCount = 0;
-            int commentsCount = 0;
-
-            Post post = new Post(postId, title, text, likesCount);
+            Post post = new Post(postId, "title1", "text1", 0);
             when(tagService.getPostTags(post)).thenReturn(List.of());
-            when(commentRepository.countPostComments(postId)).thenReturn(commentsCount);
+            when(commentRepository.countPostComments(postId)).thenReturn(0);
 
             PostDto dto = service.getRichPostById(post);
 

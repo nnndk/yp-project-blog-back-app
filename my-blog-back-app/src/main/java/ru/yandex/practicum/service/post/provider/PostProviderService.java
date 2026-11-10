@@ -8,7 +8,7 @@ public interface PostProviderService {
 
     Post getPostById(long id);
 
-    PaginatedPostListDto searchPostsPaginated(String search, int pageNumber, int pageSize);
+    PaginatedPostListDto searchPostsPaginated(String search, int pageNumber, long pageSize);
 
     PostDto getRichPostById(Post post);
 }

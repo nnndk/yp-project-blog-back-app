@@ -11,9 +11,21 @@ public interface PostRepository {
 
     Optional<Post> findPostById(long id);
 
-    long countSearchedPosts(String searchText);
+    long countAllPosts();
 
-    List<Post> searchPostsByTextPaginated(String searchText, long offset, int limit);
+    long countSearchedPostsByTags(List<String> tags);
+
+    long countSearchedPostsByTitleSubstring(String substring);
+
+    long countSearchedPostsByTagsAndTitleSubstring(List<String> tags, String substring);
+
+    List<Post> getAllPostsPaginated(long offset, long limit);
+
+    List<Post> searchPostsByTagsPaginated(List<String> tags, long offset, long limit);
+
+    List<Post> searchPostsByTitleSubstringPaginated(String substring, long offset, long limit);
+
+    List<Post> searchPostsByTagsAndTitleSubstringPaginated(List<String> tags, String substring, long offset, long limit);
 
     Post createPost(CreatePostDto dto);
 
