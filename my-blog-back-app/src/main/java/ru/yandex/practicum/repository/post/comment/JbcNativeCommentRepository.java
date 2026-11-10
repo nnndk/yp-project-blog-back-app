@@ -110,7 +110,7 @@ public class JbcNativeCommentRepository implements CommentRepository {
             return ps;
         }, keyHolder);
 
-        long commentId = Optional.ofNullable(keyHolder.getKeyAs(Long.class)).orElseThrow(
+        long commentId = Optional.ofNullable((Long)keyHolder.getKeys().get("ID")).orElseThrow(
                 () -> new RuntimeException("Failed to get generated key"));
 
         return findCommentByPostIdByCommentId(postId, commentId).orElseThrow(
@@ -130,6 +130,6 @@ public class JbcNativeCommentRepository implements CommentRepository {
 
     @Override
     public void deleteCommentByPostIdByCommentId(long postId, long commentId) {
-        jdbcTemplate.update("delete from comments where post_id = ? and comment_id = ?", postId, commentId);
+        jdbcTemplate.update("delete from comments where post_id = ? and id = ?", postId, commentId);
     }
 }

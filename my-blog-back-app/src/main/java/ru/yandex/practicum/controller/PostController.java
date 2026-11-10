@@ -82,7 +82,7 @@ public class PostController {
                 .body(image);
     }
 
-    @PostMapping("/{id}/image")
+    @PutMapping("/{id}/image")
     public ResponseEntity<Void> updatePostImage(
             @PathVariable("id") long id,
             @RequestParam("image") MultipartFile image
