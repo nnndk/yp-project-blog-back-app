@@ -55,10 +55,10 @@ public class JbcNativePostRepository implements PostRepository {
 
     @Override
     public Optional<Post> findPostById(long id) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject("""
-                    %s
-                    where id = ?
-                """.formatted(SELECT_FROM_POST_SQL),
+        return jdbcTemplate.query("""
+                            %s
+                            where id = ?
+                        """.formatted(SELECT_FROM_POST_SQL),
                 (rs, rowNum) -> new Post(
                         rs.getLong("id"),
                         rs.getString("title"),
@@ -66,7 +66,7 @@ public class JbcNativePostRepository implements PostRepository {
                         rs.getInt("likes_count")
                 ),
                 id
-        ));
+        ).stream().findFirst();
     }
 
     @Override
@@ -188,7 +188,7 @@ public class JbcNativePostRepository implements PostRepository {
                         rs.getString("text"),
                         rs.getInt("likes_count")
                 ),
-                params
+                params.toArray()
         );
     }
 
@@ -219,7 +219,7 @@ public class JbcNativePostRepository implements PostRepository {
                         rs.getString("text"),
                         rs.getInt("likes_count")
                 ),
-                params
+                params.toArray()
         );
     }
 
@@ -259,7 +259,7 @@ public class JbcNativePostRepository implements PostRepository {
                         rs.getString("text"),
                         rs.getInt("likes_count")
                 ),
-                params
+                params.toArray()
         );
     }
 
@@ -315,21 +315,13 @@ public class JbcNativePostRepository implements PostRepository {
     }
 
     private int getPostLikesCount(long id) {
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(
+        return jdbcTemplate.query(
                         "select likes_count from posts where id = ?",
-                        Integer.class,
+                        (rs, n) -> rs.getInt("likes_count"),
                         id
-                )
-            )
-            .orElseThrow(
-                    () -> new IllegalStateException(
-                            String.format(
-                                    "Failed to get likes_count for post with id = `%d`",
-                                    id
-                            )
-                    )
-            );
+                ).stream().findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        String.format("Failed to get likes_count for post with id = `%d`", id)));
     }
 
     private void ensurePaginationParamsCorrect(long offset, long limit) {

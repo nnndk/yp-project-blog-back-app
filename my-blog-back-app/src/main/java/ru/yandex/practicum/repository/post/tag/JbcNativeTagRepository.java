@@ -105,7 +105,8 @@ public class JbcNativeTagRepository implements TagRepository {
     private long[] getOrCreateTags(String[] tags) {
         List<Tag> existingTags = getExistingTags(tags);
         String[] existingTagTexts = existingTags.stream().map(Tag::getTag).toArray(String[]::new);
-        List<String> tagsToCreate = arrayDiffTools.getItemsNotInLatter(tags, existingTagTexts);
+        List<String> tagsToCreate = arrayDiffTools.getItemsNotInLatter(tags, existingTagTexts)
+                .stream().distinct().toList();
 
         long[] createdTagIds = createTags(tagsToCreate.toArray(String[]::new));
         long[] existingTagIds = existingTags.stream().mapToLong(Tag::getId).toArray();
@@ -131,6 +132,10 @@ public class JbcNativeTagRepository implements TagRepository {
     }
 
     private long[] createTags(String[] tags) {
+        if (tags.length == 0) {
+            return new long[0];
+        }
+
         OffsetDateTime now = dateTimeTools.getCurrentDateTime();
 
         String values = String.join(", ", Collections.nCopies(tags.length, "(?, ?)"));
@@ -154,6 +159,10 @@ public class JbcNativeTagRepository implements TagRepository {
     }
 
     private void deleteTagsFromPost(long id, List<Tag> tags) {
+        if (tags.isEmpty()) {
+            return;
+        }
+
         String tagParamPlaceholders = String.join(",", Collections.nCopies(tags.size(), "?"));
 
         List<Object> params = new ArrayList<>(tags.size() + 1);
@@ -169,6 +178,10 @@ public class JbcNativeTagRepository implements TagRepository {
     }
 
     private void deleteUnsuedTags(List<Tag> tags) {
+        if (tags.isEmpty()) {
+            return;
+        }
+
         String tagParamPlaceholders = String.join(",", Collections.nCopies(tags.size(), "?"));
 
         List<Object> params = new ArrayList<>(tags.size());

@@ -22,7 +22,7 @@ public class JbcNativePostImageRepository implements PostImageRepository {
 
     @Override
     public Optional<PostImage> findPostImageByPostId(long postId) {
-        List<PostImage> results = jdbcTemplate.query("""
+        return jdbcTemplate.query("""
             select post_id, origin_filename, storage_file_id from post_images
             where post_id = ?
             """,
@@ -32,8 +32,7 @@ public class JbcNativePostImageRepository implements PostImageRepository {
                         rs.getString("storage_file_id")
                 ),
                 postId
-        );
-        return results.stream().findFirst();
+        ).stream().findFirst();
     }
 
     @Override

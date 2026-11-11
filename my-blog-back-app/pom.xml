@@ -28,6 +28,7 @@
         <plugin.maven.compiler.version>3.8.1</plugin.maven.compiler.version>
         <plugin.maven.war.version>3.4.0</plugin.maven.war.version>
         <plugin.maven.surefire.version>3.6.1</plugin.maven.surefire.version>
+        <plugin.maven.failsafe.version>3.6.1</plugin.maven.failsafe.version>
     </properties>
 
     <build>
@@ -58,6 +59,22 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${plugin.maven.failsafe.version}</version> <!-- или актуальная версия -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencyManagement>

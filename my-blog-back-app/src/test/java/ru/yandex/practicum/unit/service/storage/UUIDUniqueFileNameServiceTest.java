@@ -6,7 +6,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.service.storage.name.UniqueFileNameService;
-import ru.yandex.practicum.unit.configuration.UUIDUniqueFileNameServiceTestConfig;
+import ru.yandex.practicum.configuration.UUIDUniqueFileNameServiceTestConfig;
 
 import java.util.HashSet;
 import java.util.Set;

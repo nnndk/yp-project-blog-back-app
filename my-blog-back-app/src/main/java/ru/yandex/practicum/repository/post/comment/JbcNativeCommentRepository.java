@@ -25,10 +25,10 @@ public class JbcNativeCommentRepository implements CommentRepository {
 
     @Override
     public Optional<Comment> findCommentByPostIdByCommentId(long postId, long commentId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject("""
-                    select id, text, post_id from comments
-                    where post_id = ? and id = ?
-                """,
+        return jdbcTemplate.query("""
+                select id, text, post_id from comments
+                where post_id = ? and id = ?
+            """,
                 (rs, rowNum) -> new Comment(
                         rs.getLong("id"),
                         rs.getString("text"),
@@ -36,7 +36,7 @@ public class JbcNativeCommentRepository implements CommentRepository {
                 ),
                 postId,
                 commentId
-        ));
+        ).stream().findFirst();
     }
 
     @Override
