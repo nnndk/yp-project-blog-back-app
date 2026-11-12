@@ -16,6 +16,8 @@ import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.tag.TagService;
 import ru.yandex.practicum.unit.configuration.PostEditorServiceImplTestConfig;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalMatchers.aryEq;
@@ -110,6 +112,7 @@ public class PostEditorServiceImplTest {
             UpdatePostWithTagsDto dto = new UpdatePostWithTagsDto(postId, title, text, tags);
             PostDto expected = new PostDto(postId, title, text, tags, likesCount, commentsCount);
 
+            when(postRepository.findPostById(postId)).thenReturn(Optional.of(post));
             when(postProviderService.getRichPostById(post)).thenReturn(expected);
 
             PostDto result = service.updatePost(post, dto);
@@ -132,6 +135,7 @@ public class PostEditorServiceImplTest {
             UpdatePostWithTagsDto dto = new UpdatePostWithTagsDto(dtoId, title, text, new String[0]);
             PostDto expected = new PostDto(postId, title, text, new String[0], 5, 3);
 
+            when(postRepository.findPostById(postId)).thenReturn(Optional.of(post));
             when(postProviderService.getRichPostById(post)).thenReturn(expected);
 
             service.updatePost(post, dto);

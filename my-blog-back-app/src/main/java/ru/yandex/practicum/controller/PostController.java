@@ -2,6 +2,7 @@ package ru.yandex.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
+import ru.yandex.practicum.exceptions.post.PostNotFountException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.service.post.editor.PostEditorService;
 import ru.yandex.practicum.service.post.image.PostImageService;
@@ -39,9 +41,15 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public PostDto getPostById(@PathVariable("id") long id) {
-        Post post = postProviderService.getPostById(id);
-        return postProviderService.getRichPostById(post);
+    public ResponseEntity<?> getPostById(@PathVariable("id") long id) {
+        try {
+            Post post = postProviderService.getPostById(id);
+            PostDto postDto = postProviderService.getRichPostById(post);
+            return ResponseEntity.ok(postDto);
+        }
+        catch (PostNotFountException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping
@@ -50,45 +58,72 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public PostDto updatePost(
+    public ResponseEntity<?> updatePost(
             @PathVariable("id") long id,
             @RequestBody UpdatePostWithTagsDto dto
     ) {
-        Post post = postProviderService.getPostById(id);
-        return postEditorService.updatePost(post, dto);
+        try {
+            Post post = postProviderService.getPostById(id);
+            PostDto postDto = postEditorService.updatePost(post, dto);
+            return ResponseEntity.ok(postDto);
+        }
+        catch (PostNotFountException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable("id") long id) {
-        Post post = postProviderService.getPostById(id);
-        postEditorService.deletePostById(post);
+    public ResponseEntity<?> deletePost(@PathVariable("id") long id) {
+        try {
+            Post post = postProviderService.getPostById(id);
+            postEditorService.deletePostById(post);
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build();
+        }
+        catch (PostNotFountException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping("/{id}/likes")
-    public int incrementPostLikes(@PathVariable("id") long id) {
-        Post post = postProviderService.getPostById(id);
-        return postEditorService.incrementPostLikesById(post);
+    public ResponseEntity<?> incrementPostLikes(@PathVariable("id") long id) {
+        try {
+            Post post = postProviderService.getPostById(id);
+            int newPostLikes = postEditorService.incrementPostLikesById(post);
+
+            return ResponseEntity.ok(newPostLikes);
+        }
+        catch (PostNotFountException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}/image")
-    public ResponseEntity<Resource> getPostImageById(@PathVariable("id") long id) {
-        // надо проверить, что конкретно требует фронт. Правильно ли я вернул или надо именно byte[]?
-        Post post = postProviderService.getPostById(id);
-        Resource image = postImageService.getPostImage(post);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(image);
+    public ResponseEntity<?> getPostImageById(@PathVariable("id") long id) {
+        try {
+            Post post = postProviderService.getPostById(id);
+            Resource image = postImageService.getPostImage(post);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(image);
+        }
+        catch (PostNotFountException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/image")
-    public ResponseEntity<Void> updatePostImage(
+    public ResponseEntity<?> updatePostImage(
             @PathVariable("id") long id,
             @RequestParam("image") MultipartFile image
     ) {
-        Post post = postProviderService.getPostById(id);
-        postImageService.updatePostImage(post, image);
-        return ResponseEntity.ok().build();
+        try {
+            Post post = postProviderService.getPostById(id);
+            postImageService.updatePostImage(post, image);
+            return ResponseEntity.ok().build();
+        }
+        catch (PostNotFountException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

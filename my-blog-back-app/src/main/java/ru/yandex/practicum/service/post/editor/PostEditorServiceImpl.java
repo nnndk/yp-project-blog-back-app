@@ -3,6 +3,7 @@ package ru.yandex.practicum.service.post.editor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.post.*;
+import ru.yandex.practicum.exceptions.post.PostNotFountException;
 import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
@@ -49,7 +50,10 @@ public class PostEditorServiceImpl implements PostEditorService {
         postRepository.updatePost(post.getId(), postDto);
         tagService.updatePostTags(post, dto.tags());
 
-        return postProviderService.getRichPostById(post);
+        Post updatedPost = postRepository.findPostById(post.getId())
+                .orElseThrow(() -> new PostNotFountException(post.getId()));
+
+        return postProviderService.getRichPostById(updatedPost);
     }
 
     @Override
