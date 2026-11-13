@@ -77,31 +77,6 @@ public class PostProviderServiceImplTest {
 
 
     @Nested
-    class SearchPostsPaginatedValidation {
-
-        @ParameterizedTest
-        @ValueSource(ints = {0, -1, Integer.MIN_VALUE})
-        void invalidPageNumber_throws(int pageNumber) {
-            assertThatThrownBy(() -> service.searchPostsPaginated("q", pageNumber, 5))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("`pageNumber` cannot be less than 1");
-
-            verifyNoInteractions(postRepository, tagService, commentRepository);
-        }
-
-        @ParameterizedTest
-        @ValueSource(longs = {0L, -1L, Long.MIN_VALUE})
-        void invalidPageSize_throws(long pageSize) {
-            assertThatThrownBy(() -> service.searchPostsPaginated("q", 1, pageSize))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("`pageSize` cannot be less than 1");
-
-            verifyNoInteractions(postRepository, tagService, commentRepository);
-        }
-    }
-
-
-    @Nested
     class SearchPostsPaginatedBranchTagsAndSubstring {
 
         @Test

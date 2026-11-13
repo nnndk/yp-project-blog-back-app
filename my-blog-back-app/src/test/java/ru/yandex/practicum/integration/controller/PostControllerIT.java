@@ -284,7 +284,7 @@ public class PostControllerIT {
         @Test
         void notFound_returns404() throws Exception {
             String body = """
-                    {"id": 999, "title": "t", "text": "x", "tags": []}
+                    {"id": 999, "title": "ttt", "text": "x", "tags": []}
                     """;
 
             mockMvc.perform(put("/posts/999")
