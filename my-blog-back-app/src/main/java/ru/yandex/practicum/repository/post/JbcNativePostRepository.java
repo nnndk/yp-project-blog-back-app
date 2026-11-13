@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.post.CreatePostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
 import ru.yandex.practicum.model.post.Post;
@@ -303,11 +304,12 @@ public class JbcNativePostRepository implements PostRepository {
     @Override
     public int incrementPostLikes(long id) {
         OffsetDateTime now = dateTimeTools.getCurrentDateTime();
+        int likesCount = getPostLikesCount(id);
         jdbcTemplate.update(
                 "update posts set likes_count = likes_count + 1, modified_at = ? where id = ?",
                 now,  id);
 
-        return getPostLikesCount(id);
+        return likesCount + 1;
     }
 
     private String prepareSearchTextForQuery(String searchText) {

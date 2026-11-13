@@ -658,5 +658,25 @@ public class JbcNativePostRepositoryIT {
             assertThatThrownBy(() -> postRepository.incrementPostLikes(99L))
                     .isInstanceOf(IllegalStateException.class);
         }
+
+        @Test
+        void returnsIncrementedValue() {
+            insertPost(66L);
+
+            int currLikes1 = postRepository.incrementPostLikes(66L);
+            int currLikes2 = postRepository.incrementPostLikes(66L);
+            int currLikes3 = postRepository.incrementPostLikes(66L);
+            int currLikes4 = postRepository.incrementPostLikes(66L);
+            int currLikes5 = postRepository.incrementPostLikes(66L);
+
+            assertThat(currLikes1).isEqualTo(1);
+            assertThat(currLikes2).isEqualTo(2);
+            assertThat(currLikes3).isEqualTo(3);
+            assertThat(currLikes4).isEqualTo(4);
+            assertThat(currLikes5).isEqualTo(5);
+
+            assertThat(postRepository.findPostById(66L).orElseThrow().getLikesCount())
+                    .isEqualTo(5);
+        }
     }
 }
