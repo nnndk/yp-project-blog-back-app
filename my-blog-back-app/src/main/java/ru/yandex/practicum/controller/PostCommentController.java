@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.controller.common.ControllerVerifyHelper;
+import ru.yandex.practicum.controller.common.ExceptionToResponseTool;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
@@ -24,6 +25,7 @@ import java.util.List;
 public class PostCommentController {
 
     private final ControllerVerifyHelper controllerVerifyHelper;
+    private final ExceptionToResponseTool exceptionToResponseTool;
     private final CommentProviderService commentProviderService;
     private final CommentEditorService commentEditorService;
     private final PostProviderService postProviderService;
@@ -41,9 +43,9 @@ public class PostCommentController {
 
             return ResponseEntity.ok(comments);
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         } catch (PostNotFountException | CommentNotFountException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -61,9 +63,9 @@ public class PostCommentController {
 
             return ResponseEntity.ok(comment);
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         } catch (PostNotFountException | CommentNotFountException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -75,15 +77,16 @@ public class PostCommentController {
         try {
             controllerVerifyHelper.ensureIntParamPositive("postId", postId);
             dto.ensureDtoCorrect();
+            controllerVerifyHelper.ensureParamIdAndDtoIdEqual(postId, dto.postId());
 
             Post post = postProviderService.getPostById(postId);
             CommentDto comment = commentEditorService.createPostComment(post, dto);
 
             return ResponseEntity.ok(comment);
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         } catch (PostNotFountException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -97,6 +100,8 @@ public class PostCommentController {
             controllerVerifyHelper.ensureIntParamPositive("postId", postId);
             controllerVerifyHelper.ensureIntParamPositive("commentId", commentId);
             dto.ensureDtoCorrect();
+            controllerVerifyHelper.ensureParamIdAndDtoIdEqual(postId, dto.postId());
+            controllerVerifyHelper.ensureParamIdAndDtoIdEqual(commentId, dto.id());
 
             Post post = postProviderService.getPostById(postId);
             Comment comment = commentProviderService.getPostCommentModelById(post, commentId);
@@ -104,9 +109,9 @@ public class PostCommentController {
 
             return ResponseEntity.ok(commentDto);
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         } catch (PostNotFountException | CommentNotFountException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -125,9 +130,9 @@ public class PostCommentController {
 
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         } catch (PostNotFountException | CommentNotFountException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 }

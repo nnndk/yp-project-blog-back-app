@@ -104,7 +104,7 @@ public class JbcNativeCommentRepository implements CommentRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, dto.text());
-            ps.setLong(2, dto.postId());
+            ps.setLong(2, postId);
             ps.setObject(3, now);
             ps.setObject(4, now);
             return ps;

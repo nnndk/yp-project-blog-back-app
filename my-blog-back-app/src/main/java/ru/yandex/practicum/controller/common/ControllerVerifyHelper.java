@@ -11,6 +11,7 @@ public class ControllerVerifyHelper {
 
     private static final String INT_MORE_ZERO_TEMPLATE = "`%s` cannot be less than 1";
     private static final String EMPTY_IMAGE_EXCEPTION = "Image cannot be null or empty";
+    private static final String DIFFERENT_ID_IN_PARAM_AND_DTO_EXCEPTION = "Id in param and in dto must be the same";
 
     public void ensurePaginationParamsCorrect(int pageNumber, int pageSize) {
         ensureIntParamPositive("pageNumber", pageNumber);
@@ -29,11 +30,9 @@ public class ControllerVerifyHelper {
         }
     }
 
-    public ResponseEntity<?> handleIncorrectParamException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    public ResponseEntity<?> handleNotFoundException(ItemNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    public void ensureParamIdAndDtoIdEqual(long paramId, long dtoId) {
+        if (paramId != dtoId) {
+            throw new IllegalArgumentException(DIFFERENT_ID_IN_PARAM_AND_DTO_EXCEPTION);
+        }
     }
 }

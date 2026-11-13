@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.controller.common.ControllerVerifyHelper;
+import ru.yandex.practicum.controller.common.ExceptionToResponseTool;
 import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.UpdatePostWithTagsDto;
@@ -22,6 +23,7 @@ import ru.yandex.practicum.service.post.provider.PostProviderService;
 public class PostController {
 
     private final ControllerVerifyHelper controllerVerifyHelper;
+    private final ExceptionToResponseTool exceptionToResponseTool;
     private final PostProviderService postProviderService;
     private final PostImageService postImageService;
     private final PostEditorService postEditorService;
@@ -41,7 +43,7 @@ public class PostController {
             controllerVerifyHelper.ensurePaginationParamsCorrect(pageNumber, pageSize);
             return ResponseEntity.ok(postProviderService.searchPostsPaginated(search, pageNumber, pageSize));
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
     }
 
@@ -55,9 +57,9 @@ public class PostController {
 
             return ResponseEntity.ok(postDto);
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         } catch (PostNotFountException e) {
-            return controllerVerifyHelper.handleNotFoundException(e);
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -67,7 +69,7 @@ public class PostController {
             dto.ensureDtoCorrect();
             return ResponseEntity.ok(postEditorService.createPost(dto));
         } catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
     }
 
@@ -79,6 +81,7 @@ public class PostController {
         try {
             controllerVerifyHelper.ensureIntParamPositive("id", id);
             dto.ensureDtoCorrect();
+            controllerVerifyHelper.ensureParamIdAndDtoIdEqual(id, dto.id());
 
             Post post = postProviderService.getPostById(id);
             PostDto postDto = postEditorService.updatePost(post, dto);
@@ -86,10 +89,10 @@ public class PostController {
             return ResponseEntity.ok(postDto);
         }
         catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
         catch (PostNotFountException e) {
-            return controllerVerifyHelper.handleNotFoundException(e);
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -104,10 +107,10 @@ public class PostController {
             return ResponseEntity.ok().build();
         }
         catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
         catch (PostNotFountException e) {
-            return controllerVerifyHelper.handleNotFoundException(e);
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -122,10 +125,10 @@ public class PostController {
             return ResponseEntity.ok(newPostLikes);
         }
         catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
         catch (PostNotFountException e) {
-            return controllerVerifyHelper.handleNotFoundException(e);
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -142,10 +145,10 @@ public class PostController {
                     .body(image);
         }
         catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
         catch (PostNotFountException e) {
-            return controllerVerifyHelper.handleNotFoundException(e);
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
@@ -164,10 +167,10 @@ public class PostController {
             return ResponseEntity.ok().build();
         }
         catch (IllegalArgumentException e) {
-            return controllerVerifyHelper.handleIncorrectParamException(e);
+            return exceptionToResponseTool.handleIncorrectParamException(e);
         }
         catch (PostNotFountException e) {
-            return controllerVerifyHelper.handleNotFoundException(e);
+            return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 }
