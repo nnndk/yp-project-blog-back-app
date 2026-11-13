@@ -22,7 +22,7 @@ public record PostDto(
         return new PostDto(
                 model.getId(),
                 model.getTitle(),
-                model.getText(),
+                model.getText().substring(0, Math.min(128, model.getText().length())),
                 tags.toArray(String[]::new),
                 model.getLikesCount(),
                 commentsCount

@@ -273,18 +273,13 @@ public class PostControllerIT {
             mockMvc.perform(put("/posts/" + postId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(body))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.title").value("new title"));
-
-            String title = jdbcTemplate.queryForObject(
-                    "select title from posts where id = ?", String.class, postId);
-            assertThat(title).isEqualTo("new title");
+                    .andExpect(status().isBadRequest());
         }
 
         @Test
         void notFound_returns404() throws Exception {
             String body = """
-                    {"id": 999, "title": "t", "text": "x", "tags": []}
+                    {"id": 999, "title": "ttt", "text": "x", "tags": []}
                     """;
 
             mockMvc.perform(put("/posts/999")

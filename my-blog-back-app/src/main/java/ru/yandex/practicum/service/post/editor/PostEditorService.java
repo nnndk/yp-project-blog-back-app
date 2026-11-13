@@ -11,7 +11,7 @@ public interface PostEditorService {
 
     PostDto updatePost(Post post, UpdatePostWithTagsDto dto);
 
-    void deletePostById(Post post);
+    void deletePost(Post post);
 
     int incrementPostLikesById(Post post);
 }

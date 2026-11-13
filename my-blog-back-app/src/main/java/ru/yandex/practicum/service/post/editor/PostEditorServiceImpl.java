@@ -4,15 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.post.*;
 import ru.yandex.practicum.exceptions.post.PostNotFountException;
-import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.service.post.image.PostImageService;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.tag.TagService;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -57,10 +55,10 @@ public class PostEditorServiceImpl implements PostEditorService {
     }
 
     @Override
-    public void deletePostById(Post post) {
+    public void deletePost(Post post) {
         try {
             postImageService.deletePostImage(post);
-        } catch (PostImageNotFountException ignored) { }
+        } catch (PostImageNotFoundException ignored) { }
 
         postRepository.deletePost(post.getId()); // комментарии и связи с тегами поста удаляются каскадно
     }

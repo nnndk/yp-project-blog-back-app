@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
-import ru.yandex.practicum.exceptions.post.comment.CommentNotFountException;
+import ru.yandex.practicum.exceptions.post.comment.CommentNotFoundException;
 import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
@@ -44,8 +44,8 @@ public class CommentProviderServiceImplTest {
                     .thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> service.getPostCommentModelById(post, commentId))
-                    .isInstanceOf(CommentNotFountException.class)
-                    .hasMessage((new CommentNotFountException(postId, commentId)).getMessage());
+                    .isInstanceOf(CommentNotFoundException.class)
+                    .hasMessage((new CommentNotFoundException(postId, commentId)).getMessage());
         }
 
         @Test

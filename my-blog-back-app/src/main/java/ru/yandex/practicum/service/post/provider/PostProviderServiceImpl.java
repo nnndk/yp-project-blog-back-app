@@ -36,13 +36,6 @@ public class PostProviderServiceImpl implements PostProviderService {
 
     @Override
     public PaginatedPostListDto searchPostsPaginated(String search, int pageNumber, long pageSize) {
-        if (pageNumber < 1) {
-            throw new IllegalArgumentException("`pageNumber` cannot be less than 1");
-        }
-        if (pageSize < 1) {
-            throw new IllegalArgumentException("`pageSize` cannot be less than 1");
-        }
-
         SearchComponents searchComponents = searchTools.decomposeSearchText(search);
         PostSearchMode searchMode = getSearchMode(searchComponents);
 

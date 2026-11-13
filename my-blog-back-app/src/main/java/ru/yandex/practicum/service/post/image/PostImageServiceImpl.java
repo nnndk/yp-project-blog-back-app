@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.dto.post.image.CreatePostImageDto;
 import ru.yandex.practicum.dto.post.image.UpdatePostImageDto;
-import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.model.post.PostImage;
 import ru.yandex.practicum.repository.post.image.PostImageRepository;
@@ -44,28 +44,36 @@ public class PostImageServiceImpl implements PostImageService {
 
     @Override
     public void updatePostImage(Post post, MultipartFile imageFile) {
-        PostImage postImage = postImageRepository.findPostImageByPostId(post.getId()).orElse(null);
-        boolean firstPostImage = postImage == null;
+        PostImage originPostImage = postImageRepository.findPostImageByPostId(post.getId()).orElse(null);
+        boolean firstPostImage = originPostImage == null;
         String fileStorageId = fileStorageService.saveFile(imageFile);
 
-        if (firstPostImage) {
-            postImageRepository.createPostImage(
-                    post.getId(),
-                    new CreatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
-            );
-        } else {
-            fileStorageService.deleteFile(postImage.getStorageFileId());
-            postImageRepository.updatePostImage(
-                    post.getId(),
-                    new UpdatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
-            );
+        try {
+            if (firstPostImage) {
+                postImageRepository.createPostImage(
+                        post.getId(),
+                        new CreatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
+                );
+            } else {
+                postImageRepository.updatePostImage(
+                        post.getId(),
+                        new UpdatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
+                );
+            }
+        } catch (Exception e) {
+            fileStorageService.deleteFile(fileStorageId);
+            throw e;
+        }
+
+        if (!firstPostImage) {
+            fileStorageService.deleteFile(originPostImage.getStorageFileId());
         }
     }
 
     @Override
     public void deletePostImage(Post post) {
         PostImage postImage = postImageRepository.findPostImageByPostId(post.getId()).orElseThrow(
-                () -> new PostImageNotFountException(post.getId()));
+                () -> new PostImageNotFoundException(post.getId()));
 
         fileStorageService.deleteFile(postImage.getStorageFileId());
         postImageRepository.deletePostImage(postImage.getPostId());

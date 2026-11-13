@@ -146,7 +146,7 @@ public class PostServiceRepositoryIT {
             postImageService.updatePostImage(post,
                     new MockMultipartFile("image", "image.png", "image/png", "data".getBytes()));
 
-            postEditorService.deletePostById(post);
+            postEditorService.deletePost(post);
 
             assertThat(countRows("posts")).isZero();
             assertThat(countRows("comments")).isZero();
@@ -161,7 +161,7 @@ public class PostServiceRepositoryIT {
                     new CreatePostWithTagsDto("title1", "text1", new String[0]));
             Post post = postProviderService.getPostById(created.id());
 
-            postEditorService.deletePostById(post);
+            postEditorService.deletePost(post);
 
             assertThat(countRows("posts")).isZero();
         }
@@ -173,7 +173,7 @@ public class PostServiceRepositoryIT {
             PostDto p2 = postEditorService.createPost(
                     new CreatePostWithTagsDto("t2", "x", new String[]{"tag_1"}));
 
-            postEditorService.deletePostById(postProviderService.getPostById(p1.id()));
+            postEditorService.deletePost(postProviderService.getPostById(p1.id()));
 
             assertThat(postProviderService.getPostById(p2.id()).getTitle()).isEqualTo("t2");
             assertThat(jdbcTemplate.queryForObject(

@@ -2,7 +2,6 @@ package ru.yandex.practicum.integration.configuration;
 
 import org.h2.Driver;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -16,6 +15,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import ru.yandex.practicum.WebConfiguration;
 import ru.yandex.practicum.controller.PostCommentController;
 import ru.yandex.practicum.controller.PostController;
+import ru.yandex.practicum.controller.common.ControllerVerifyHelper;
+import ru.yandex.practicum.controller.common.ExceptionToResponseTool;
 import ru.yandex.practicum.service.post.comment.editor.CommentEditorService;
 import ru.yandex.practicum.service.post.comment.provider.CommentProviderService;
 import ru.yandex.practicum.service.post.editor.PostEditorService;
@@ -84,21 +85,25 @@ public class WebTestConfig implements DisposableBean {
     @Bean
     @Primary
     public PostController postController(
+            ControllerVerifyHelper controllerVerifyHelper,
+            ExceptionToResponseTool exceptionToResponseTool,
             PostProviderService postProviderService,
             PostImageService postImageService,
             PostEditorService postEditorService
     ) {
-        return new PostController(postProviderService, postImageService, postEditorService);
+        return new PostController(controllerVerifyHelper, exceptionToResponseTool, postProviderService, postImageService, postEditorService);
     }
 
     @Bean
     @Primary
     public PostCommentController postCommentController(
+            ControllerVerifyHelper controllerVerifyHelper,
+            ExceptionToResponseTool exceptionToResponseTool,
             CommentProviderService commentProviderService,
             CommentEditorService commentEditorService,
             PostProviderService postProviderService
     ) {
-        return new PostCommentController(commentProviderService, commentEditorService, postProviderService);
+        return new PostCommentController(controllerVerifyHelper, exceptionToResponseTool, commentProviderService, commentEditorService, postProviderService);
     }
 
     @Override

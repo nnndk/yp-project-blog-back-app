@@ -11,7 +11,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.image.CreatePostImageDto;
 import ru.yandex.practicum.dto.post.image.UpdatePostImageDto;
-import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.model.post.PostImage;
 import ru.yandex.practicum.repository.post.image.PostImageRepository;
@@ -153,8 +153,8 @@ public class PostImageServiceImplTest {
             service.updatePostImage(post, imageFile);
 
             inOrder.verify(fileStorageService).saveFile(imageFile);
-            inOrder.verify(fileStorageService).deleteFile(oldStorageFileId);
             inOrder.verify(postImageRepository).updatePostImage(anyLong(), any());
+            inOrder.verify(fileStorageService).deleteFile(oldStorageFileId);
         }
     }
 
@@ -170,8 +170,8 @@ public class PostImageServiceImplTest {
             when(postImageRepository.findPostImageByPostId(postId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> service.deletePostImage(post))
-                    .isInstanceOf(PostImageNotFountException.class)
-                    .hasMessage((new PostImageNotFountException(postId)).getMessage());
+                    .isInstanceOf(PostImageNotFoundException.class)
+                    .hasMessage((new PostImageNotFoundException(postId)).getMessage());
 
             verifyNoInteractions(fileStorageService);
             verify(postImageRepository, never()).deletePostImage(anyLong());

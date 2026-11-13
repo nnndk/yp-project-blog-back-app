@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JbcNativePostRepository implements PostRepository {
+public class JdbcNativePostRepository implements PostRepository {
 
     private final String SELECT_FROM_POST_SQL = """
             select p.id, p.title, p.text, p.likes_count
@@ -303,11 +303,12 @@ public class JbcNativePostRepository implements PostRepository {
     @Override
     public int incrementPostLikes(long id) {
         OffsetDateTime now = dateTimeTools.getCurrentDateTime();
+        int likesCount = getPostLikesCount(id);
         jdbcTemplate.update(
                 "update posts set likes_count = likes_count + 1, modified_at = ? where id = ?",
                 now,  id);
 
-        return getPostLikesCount(id);
+        return likesCount + 1;
     }
 
     private String prepareSearchTextForQuery(String searchText) {
