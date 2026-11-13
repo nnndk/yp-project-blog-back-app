@@ -71,6 +71,16 @@ public class SearchToolTest {
                     Arguments.of("#tag_1   ", List.of("tag_1"))
             );
         }
+
+        @Test
+        void repeatedTags_onlyUnique() {
+            String input = "#probe #probe";
+            SearchComponents result = tools.decomposeSearchText(input);
+            List<String> expectedTags = List.of("probe");
+
+            assertThat(result.tags().size()).isEqualTo(1);
+            assertThat(result.tags()).containsExactlyElementsOf(expectedTags);
+        }
     }
 
 

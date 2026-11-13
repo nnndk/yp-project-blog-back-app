@@ -20,7 +20,10 @@ public class SearchTools {
             }
 
             if (isTag(word)) {
-                tags.add(word.substring(1));
+                String tag = word.substring(1);
+                if (!tags.contains(tag)) {
+                    tags.add(tag);
+                }
             } else {
                 partsOfSubstring.add(word);
             }
