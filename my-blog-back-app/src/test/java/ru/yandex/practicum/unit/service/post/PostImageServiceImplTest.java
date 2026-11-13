@@ -153,8 +153,8 @@ public class PostImageServiceImplTest {
             service.updatePostImage(post, imageFile);
 
             inOrder.verify(fileStorageService).saveFile(imageFile);
-            inOrder.verify(fileStorageService).deleteFile(oldStorageFileId);
             inOrder.verify(postImageRepository).updatePostImage(anyLong(), any());
+            inOrder.verify(fileStorageService).deleteFile(oldStorageFileId);
         }
     }
 

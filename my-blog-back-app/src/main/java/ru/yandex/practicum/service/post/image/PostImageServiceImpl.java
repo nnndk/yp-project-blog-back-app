@@ -44,21 +44,29 @@ public class PostImageServiceImpl implements PostImageService {
 
     @Override
     public void updatePostImage(Post post, MultipartFile imageFile) {
-        PostImage postImage = postImageRepository.findPostImageByPostId(post.getId()).orElse(null);
-        boolean firstPostImage = postImage == null;
+        PostImage originPostImage = postImageRepository.findPostImageByPostId(post.getId()).orElse(null);
+        boolean firstPostImage = originPostImage == null;
         String fileStorageId = fileStorageService.saveFile(imageFile);
 
-        if (firstPostImage) {
-            postImageRepository.createPostImage(
-                    post.getId(),
-                    new CreatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
-            );
-        } else {
-            fileStorageService.deleteFile(postImage.getStorageFileId());
-            postImageRepository.updatePostImage(
-                    post.getId(),
-                    new UpdatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
-            );
+        try {
+            if (firstPostImage) {
+                postImageRepository.createPostImage(
+                        post.getId(),
+                        new CreatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
+                );
+            } else {
+                postImageRepository.updatePostImage(
+                        post.getId(),
+                        new UpdatePostImageDto(imageFile.getOriginalFilename(), fileStorageId)
+                );
+            }
+        } catch (Exception e) {
+            fileStorageService.deleteFile(fileStorageId);
+            throw e;
+        }
+
+        if (!firstPostImage) {
+            fileStorageService.deleteFile(originPostImage.getStorageFileId());
         }
     }
 
