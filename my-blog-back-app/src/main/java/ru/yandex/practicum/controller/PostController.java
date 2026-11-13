@@ -102,7 +102,7 @@ public class PostController {
             controllerVerifyHelper.ensureIntParamPositive("id", id);
 
             Post post = postProviderService.getPostById(id);
-            postEditorService.deletePostById(post);
+            postEditorService.deletePost(post);
 
             return ResponseEntity.ok().build();
         }

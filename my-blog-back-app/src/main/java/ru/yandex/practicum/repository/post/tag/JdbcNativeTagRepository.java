@@ -17,7 +17,7 @@ import java.util.stream.LongStream;
 
 @Service
 @RequiredArgsConstructor
-public class JbcNativeTagRepository implements TagRepository {
+public class JdbcNativeTagRepository implements TagRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final DateTimeTools dateTimeTools;
@@ -99,7 +99,7 @@ public class JbcNativeTagRepository implements TagRepository {
     public void deleteTagsFromPost(long id, String[] tags) {
         List<Tag> tagsToDeleteFromPost = getExistingTags(tags);
         deleteTagsFromPost(id, tagsToDeleteFromPost);
-        deleteUnsuedTags(tagsToDeleteFromPost);
+        deleteUnusedTags(tagsToDeleteFromPost);
     }
 
     private long[] getOrCreateTags(String[] tags) {
@@ -177,7 +177,7 @@ public class JbcNativeTagRepository implements TagRepository {
         ), params.toArray());
     }
 
-    private void deleteUnsuedTags(List<Tag> tags) {
+    private void deleteUnusedTags(List<Tag> tags) {
         if (tags.isEmpty()) {
             return;
         }

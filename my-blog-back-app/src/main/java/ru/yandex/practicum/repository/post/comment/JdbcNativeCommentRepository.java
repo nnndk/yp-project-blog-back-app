@@ -17,7 +17,7 @@ import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
-public class JbcNativeCommentRepository implements CommentRepository {
+public class JdbcNativeCommentRepository implements CommentRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final DateTimeTools dateTimeTools;

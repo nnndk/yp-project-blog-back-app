@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.post.CreatePostDto;
 import ru.yandex.practicum.dto.post.UpdatePostDto;
 import ru.yandex.practicum.model.post.Post;
@@ -21,7 +20,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JbcNativePostRepository implements PostRepository {
+public class JdbcNativePostRepository implements PostRepository {
 
     private final String SELECT_FROM_POST_SQL = """
             select p.id, p.title, p.text, p.likes_count

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.controller.common.ControllerVerifyHelper;
@@ -10,7 +9,7 @@ import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
 import ru.yandex.practicum.exceptions.post.PostNotFountException;
-import ru.yandex.practicum.exceptions.post.comment.CommentNotFountException;
+import ru.yandex.practicum.exceptions.post.comment.CommentNotFoundException;
 import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.service.post.comment.editor.CommentEditorService;
@@ -44,13 +43,13 @@ public class PostCommentController {
             return ResponseEntity.ok(comments);
         } catch (IllegalArgumentException e) {
             return exceptionToResponseTool.handleIncorrectParamException(e);
-        } catch (PostNotFountException | CommentNotFountException e) {
+        } catch (PostNotFountException | CommentNotFoundException e) {
             return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
     @GetMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<?> getPostById(
+    public ResponseEntity<?> getCommentById(
             @PathVariable("postId") long postId,
             @PathVariable("commentId") long commentId
     ) {
@@ -64,7 +63,7 @@ public class PostCommentController {
             return ResponseEntity.ok(comment);
         } catch (IllegalArgumentException e) {
             return exceptionToResponseTool.handleIncorrectParamException(e);
-        } catch (PostNotFountException | CommentNotFountException e) {
+        } catch (PostNotFountException | CommentNotFoundException e) {
             return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
@@ -110,13 +109,13 @@ public class PostCommentController {
             return ResponseEntity.ok(commentDto);
         } catch (IllegalArgumentException e) {
             return exceptionToResponseTool.handleIncorrectParamException(e);
-        } catch (PostNotFountException | CommentNotFountException e) {
+        } catch (PostNotFountException | CommentNotFoundException e) {
             return exceptionToResponseTool.handleNotFoundException(e);
         }
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<?> deletePost(
+    public ResponseEntity<?> deleteComment(
             @PathVariable("postId") long postId,
             @PathVariable("commentId") long commentId
     ) {
@@ -131,7 +130,7 @@ public class PostCommentController {
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return exceptionToResponseTool.handleIncorrectParamException(e);
-        } catch (PostNotFountException | CommentNotFountException e) {
+        } catch (PostNotFountException | CommentNotFoundException e) {
             return exceptionToResponseTool.handleNotFoundException(e);
         }
     }

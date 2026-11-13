@@ -3,7 +3,7 @@ package ru.yandex.practicum.service.post.comment.provider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
-import ru.yandex.practicum.exceptions.post.comment.CommentNotFountException;
+import ru.yandex.practicum.exceptions.post.comment.CommentNotFoundException;
 import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
@@ -20,7 +20,7 @@ public class CommentProviderServiceImpl implements CommentProviderService {
     @Override
     public Comment getPostCommentModelById(Post post, long commentId) {
         return commentRepository.findCommentByPostIdByCommentId(post.getId(), commentId)
-                .orElseThrow(() -> new CommentNotFountException(post.getId(), commentId));
+                .orElseThrow(() -> new CommentNotFoundException(post.getId(), commentId));
     }
 
     @Override

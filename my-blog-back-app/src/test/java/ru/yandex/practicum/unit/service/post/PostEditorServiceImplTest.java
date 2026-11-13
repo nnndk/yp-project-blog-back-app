@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.*;
-import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.repository.post.PostRepository;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
@@ -153,7 +153,7 @@ public class PostEditorServiceImplTest {
             long postId = 66L;
             Post post = new Post(postId, "title1", "text1", 5);
 
-            service.deletePostById(post);
+            service.deletePost(post);
 
             verify(postImageService).deletePostImage(post);
             verify(postRepository).deletePost(postId);
@@ -164,10 +164,10 @@ public class PostEditorServiceImplTest {
             long postId = 66L;
             Post post = new Post(postId, "title1", "text1", 5);
 
-            doThrow(mock(PostImageNotFountException.class))
+            doThrow(mock(PostImageNotFoundException.class))
                     .when(postImageService).deletePostImage(post);
 
-            service.deletePostById(post);
+            service.deletePost(post);
 
             verify(postImageService).deletePostImage(post);
             verify(postRepository).deletePost(postId);
@@ -181,7 +181,7 @@ public class PostEditorServiceImplTest {
 
             doThrow(boom).when(postImageService).deletePostImage(post);
 
-            assertThatThrownBy(() -> service.deletePostById(post)).isSameAs(boom);
+            assertThatThrownBy(() -> service.deletePost(post)).isSameAs(boom);
 
             verify(postRepository, never()).deletePost(anyLong());
         }

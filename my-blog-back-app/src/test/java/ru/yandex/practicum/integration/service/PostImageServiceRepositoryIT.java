@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
 import ru.yandex.practicum.integration.configuration.ServiceRepositoryTestConfig;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.model.post.PostImage;
@@ -156,7 +156,7 @@ public class PostImageServiceRepositoryIT {
         @Test
         void noImage_throws() {
             assertThatThrownBy(() -> postImageService.deletePostImage(post))
-                    .isInstanceOf(PostImageNotFountException.class)
+                    .isInstanceOf(PostImageNotFoundException.class)
                     .hasMessageContaining("66");
         }
 

@@ -10,7 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
-import ru.yandex.practicum.exceptions.post.comment.CommentNotFountException;
+import ru.yandex.practicum.exceptions.post.comment.CommentNotFoundException;
 import ru.yandex.practicum.integration.configuration.ServiceRepositoryTestConfig;
 import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.model.post.Post;
@@ -153,7 +153,7 @@ public class CommentServiceRepositoryIT {
 
             assertThat(countComments()).isEqualTo(1);
             assertThatThrownBy(() -> commentProviderService.getPostCommentById(post, c1.id()))
-                    .isInstanceOf(CommentNotFountException.class);
+                    .isInstanceOf(CommentNotFoundException.class);
             assertThat(commentProviderService.getPostCommentById(post, c2.id()).text())
                     .isEqualTo("comment text 2");
         }
@@ -215,7 +215,7 @@ public class CommentServiceRepositoryIT {
         @Test
         void notFound_throws() {
             assertThatThrownBy(() -> commentProviderService.getPostCommentById(post, 99L))
-                    .isInstanceOf(CommentNotFountException.class)
+                    .isInstanceOf(CommentNotFoundException.class)
                     .hasMessageContaining("66")
                     .hasMessageContaining("99");
         }
@@ -226,7 +226,7 @@ public class CommentServiceRepositoryIT {
                     new CreateCommentDto("comment text 1", 66L));
 
             assertThatThrownBy(() -> commentProviderService.getPostCommentById(otherPost, created.id()))
-                    .isInstanceOf(CommentNotFountException.class);
+                    .isInstanceOf(CommentNotFoundException.class);
         }
     }
 }

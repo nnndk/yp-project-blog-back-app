@@ -9,12 +9,11 @@ import ru.yandex.practicum.model.post.PostImage;
 import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JbcNativePostImageRepository implements PostImageRepository {
+public class JdbcNativePostImageRepository implements PostImageRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final DateTimeTools dateTimeTools;

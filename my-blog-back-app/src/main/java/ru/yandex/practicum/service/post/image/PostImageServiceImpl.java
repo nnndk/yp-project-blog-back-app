@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.dto.post.image.CreatePostImageDto;
 import ru.yandex.practicum.dto.post.image.UpdatePostImageDto;
-import ru.yandex.practicum.exceptions.post.image.PostImageNotFountException;
+import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.model.post.PostImage;
 import ru.yandex.practicum.repository.post.image.PostImageRepository;
@@ -73,7 +73,7 @@ public class PostImageServiceImpl implements PostImageService {
     @Override
     public void deletePostImage(Post post) {
         PostImage postImage = postImageRepository.findPostImageByPostId(post.getId()).orElseThrow(
-                () -> new PostImageNotFountException(post.getId()));
+                () -> new PostImageNotFoundException(post.getId()));
 
         fileStorageService.deleteFile(postImage.getStorageFileId());
         postImageRepository.deletePostImage(postImage.getPostId());
