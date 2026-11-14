@@ -2,6 +2,7 @@ package ru.yandex.practicum.integration.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.yandex.practicum.integration.configuration.WebTestConfig;
+
+import java.util.Set;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -348,6 +352,44 @@ public class PostControllerIT {
         void notFound_returns404() throws Exception {
             mockMvc.perform(post("/posts/999/likes"))
                     .andExpect(status().isNotFound());
+        }
+
+        @RepeatedTest(20)
+        void concurrentHttpRequests_returnUniqueValues() throws Exception {
+            long postId = insertPost("title1");
+
+            CountDownLatch startLatch = new CountDownLatch(1);
+            CountDownLatch assertLatch = new CountDownLatch(2);
+            Set<String> bodies = ConcurrentHashMap.newKeySet();
+
+            try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+                try {
+                    for (int i = 0; i < 2; i++) {
+                        executor.submit(() -> {
+                            try {
+                                startLatch.await();
+                                String body = mockMvc.perform(post("/posts/" + postId + "/likes"))
+                                        .andExpect(status().isOk())
+                                        .andReturn().getResponse().getContentAsString();
+                                bodies.add(body);
+                            } catch (Exception e) {
+                                Thread.currentThread().interrupt();
+                            } finally {
+                                assertLatch.countDown();
+                            }
+                        });
+                    }
+
+                    startLatch.countDown();
+                    assertLatch.await(5, TimeUnit.SECONDS);
+                } finally {
+                    executor.shutdownNow();
+                }
+            }
+
+            assertThat(bodies).containsExactlyInAnyOrder("1", "2");
+            mockMvc.perform(get("/posts/" + postId))
+                    .andExpect(jsonPath("$.likesCount").value(2));
         }
     }
 

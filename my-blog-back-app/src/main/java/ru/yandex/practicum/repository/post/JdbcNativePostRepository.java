@@ -303,12 +303,11 @@ public class JdbcNativePostRepository implements PostRepository {
     @Override
     public int incrementPostLikes(long id) {
         OffsetDateTime now = dateTimeTools.getCurrentDateTime();
-        int likesCount = getPostLikesCount(id);
         jdbcTemplate.update(
                 "update posts set likes_count = likes_count + 1, modified_at = ? where id = ?",
                 now,  id);
 
-        return likesCount + 1;
+        return getPostLikesCount(id);
     }
 
     private String prepareSearchTextForQuery(String searchText) {

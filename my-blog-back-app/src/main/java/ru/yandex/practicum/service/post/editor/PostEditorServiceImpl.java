@@ -2,6 +2,7 @@ package ru.yandex.practicum.service.post.editor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.post.*;
 import ru.yandex.practicum.exceptions.post.PostNotFountException;
 import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
@@ -64,6 +65,7 @@ public class PostEditorServiceImpl implements PostEditorService {
     }
 
     @Override
+    @Transactional
     public int incrementPostLikesById(Post post) {
         return postRepository.incrementPostLikes(post.getId());
     }
