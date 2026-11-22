@@ -35,6 +35,8 @@
 
 2. Находясь в директории `my-blog-back-app/`, выполнить команду **gradlew bootrun**
 
+Для создания ExecutableJar-файла (или Fat Jar-файла) необходимо использовать команду **gradlew bootJar**. Файл будет лежать в папке `my-blog-back-app/build/lib`
+
 
 ### Тесты
 
