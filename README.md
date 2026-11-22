@@ -56,6 +56,10 @@ Unit-тесты перенес из прошлой итерации "как ес
     
     - заменил `@SpringJUnitConfig(ServiceRepositoryTestConfig.class)` на `@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)` (без запуска сервера, поскольку тестируем только сервисы)
 
+3. Пакет **controller**:
+
+    -
+
 
 ## Итерации
 

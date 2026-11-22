@@ -23,10 +23,4 @@ public class WebConfiguration implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }
-
-    @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix("/api",
-                HandlerTypePredicate.forAnnotation(RestController.class));
-    }
 }
