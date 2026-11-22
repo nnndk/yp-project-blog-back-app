@@ -45,11 +45,16 @@ Unit-тесты перенес из прошлой итерации "как ес
 Интеграционные тесты при переносе доработал следующим образом:
 
 1. Пакет **repository**:
+
     - тесты больше не нуждаются в кастомных конфигурациях (RepositoryTestConfig)
 
-    - заменил <i>@SpringJUnitConfig(RepositoryTestConfig.class)</i> на <i>@JdbcTest</i> (не @DataJdbcTest, поскольку репозитории без наследования CrudRepository все-равно не находятся автоматически)
+    - заменил `@SpringJUnitConfig(RepositoryTestConfig.class)` на `@JdbcTest` (не @DataJdbcTest, поскольку репозитории без наследования CrudRepository все-равно не находятся автоматически)
 
-    - добавил импорты нужных бинов (@Import({...}))
+    - добавил импорты нужных бинов (`@Import({...})`)
+
+2. Пакет **Service**:
+    
+    - заменил `@SpringJUnitConfig(ServiceRepositoryTestConfig.class)` на `@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)` (без запуска сервера, поскольку тестируем только сервисы)
 
 
 ## Итерации
