@@ -58,7 +58,7 @@ Unit-тесты перенес из прошлой итерации "как ес
 
 3. Пакет **controller**:
 
-    -
+    - заменил ручную конфигурацию `@SpringJUnitWebConfig(WebTestConfig.class)` на `@SpringBootTest` и `@AutoConfigureMockMvc`
 
 
 ## Итерации
