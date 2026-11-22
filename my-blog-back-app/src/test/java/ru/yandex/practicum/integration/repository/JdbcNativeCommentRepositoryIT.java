@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @Import({DateTimeTools.class, JdbcNativeCommentRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativeCommentRepositoryIT {
+public class JdbcNativeCommentRepositoryIT {
 
     @Autowired
     private CommentRepository commentRepository;

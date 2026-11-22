@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @Import({DateTimeTools.class, ArrayDiffTools.class, JdbcNativeTagRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativeTagRepositoryIT {
+public class JdbcNativeTagRepositoryIT {
 
     @Autowired
     private TagRepository tagRepository;

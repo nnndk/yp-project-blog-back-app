@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @JdbcTest
 @Import({DateTimeTools.class, JdbcNativePostImageRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativePostImageRepositoryIT {
+public class JdbcNativePostImageRepositoryIT {
 
     @Autowired
     private PostImageRepository postImageRepository;

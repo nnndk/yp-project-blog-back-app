@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @JdbcTest
 @Import({DateTimeTools.class, JdbcNativePostRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativePostRepositoryIT {
+public class JdbcNativePostRepositoryIT {
 
     @Autowired
     private PostRepository postRepository;
