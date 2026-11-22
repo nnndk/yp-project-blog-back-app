@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class DataSourceConfiguration {
 
-    @Bean
+    /*@Bean
     public DataSource dataSource(
             @Value("${spring.datasource.url}") String url,
             @Value("${spring.datasource.username}") String username,
@@ -42,7 +42,7 @@ public class DataSourceConfiguration {
     @Bean
     public JdbcTransactionManager jdbcTransactionManager(DataSource dataSource) {
         return new JdbcTransactionManager(dataSource);
-    }
+    }*/
 
     @EventListener
     public void populate(ContextRefreshedEvent event) {
