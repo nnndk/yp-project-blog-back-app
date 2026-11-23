@@ -2,3 +2,4 @@
 /_my-blog-back-app
 
 /my-blog-back-app/src/main/resources/storage/post-image
+/my-blog-back-app/src/test/resources/storage/post-image

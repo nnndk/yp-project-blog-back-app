@@ -22,14 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class PostCommentControllerIT {
 
-    @Autowired
-    private WebApplicationContext wac;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
