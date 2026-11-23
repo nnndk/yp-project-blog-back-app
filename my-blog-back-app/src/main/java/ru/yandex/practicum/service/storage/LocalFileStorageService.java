@@ -101,6 +101,10 @@ public class LocalFileStorageService implements FileStorageService {
             throw new IllegalArgumentException("Invalid filename: " + filename);
         }
 
-        return bucketPath.resolve(filename).normalize();
+        Path file = bucketPath.resolve(filename).normalize();
+        if (!file.startsWith(bucketPath)) {
+            throw new IllegalArgumentException("Path is not from root catalog: " + filename);
+        }
+        return file;
     }
 }
