@@ -27,15 +27,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class PostControllerIT {
 
-    @Autowired private WebApplicationContext wac;
-    @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private WebApplicationContext wac;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-    }
 
 
     private long insertPost(String title) {
