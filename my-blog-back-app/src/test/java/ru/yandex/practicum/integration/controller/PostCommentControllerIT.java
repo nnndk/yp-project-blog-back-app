@@ -22,17 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class PostCommentControllerIT {
 
-    @Autowired
-    private WebApplicationContext wac;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
         jdbcTemplate.update("insert into posts(id, title, text) values (?, ?, ?)", 66L, "title1", "text1");
         jdbcTemplate.update("insert into posts(id, title, text) values (?, ?, ?)", 67L, "title2", "text2");
     }
