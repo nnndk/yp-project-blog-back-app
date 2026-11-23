@@ -4,15 +4,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.image.CreatePostImageDto;
 import ru.yandex.practicum.dto.post.image.UpdatePostImageDto;
-import ru.yandex.practicum.integration.configuration.RepositoryTestConfig;
 import ru.yandex.practicum.model.post.PostImage;
+import ru.yandex.practicum.repository.post.image.JdbcNativePostImageRepository;
 import ru.yandex.practicum.repository.post.image.PostImageRepository;
+import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -22,9 +24,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringJUnitConfig(RepositoryTestConfig.class)
+@JdbcTest
+@Import({DateTimeTools.class, JdbcNativePostImageRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativePostImageRepositoryIT {
+public class JdbcNativePostImageRepositoryIT {
 
     @Autowired
     private PostImageRepository postImageRepository;

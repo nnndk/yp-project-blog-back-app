@@ -4,14 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.comment.CommentDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
 import ru.yandex.practicum.exceptions.post.comment.CommentNotFoundException;
-import ru.yandex.practicum.integration.configuration.ServiceRepositoryTestConfig;
 import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.service.post.comment.editor.CommentEditorService;
@@ -22,7 +21,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringJUnitConfig(ServiceRepositoryTestConfig.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK
+)
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class CommentServiceRepositoryIT {
 

@@ -7,7 +7,6 @@ import ru.yandex.practicum.repository.post.comment.CommentRepository;
 import ru.yandex.practicum.service.post.provider.PostProviderService;
 import ru.yandex.practicum.service.post.provider.PostProviderServiceImpl;
 import ru.yandex.practicum.service.post.tag.TagService;
-import ru.yandex.practicum.tools.ArrayDiffTools;
 import ru.yandex.practicum.tools.SearchTools;
 
 @Configuration

@@ -1,39 +1,73 @@
 package ru.yandex.practicum.integration.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import ru.yandex.practicum.integration.configuration.WebTestConfig;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringJUnitWebConfig(WebTestConfig.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PostControllerIT {
 
-    @Autowired private WebApplicationContext wac;
+    @Value("${storage.local.root}")
+    private String storageRoot;
+
+    @Value("${storage.local.bucket.postimage}")
+    private String bucketName;
+
+    private Path bucket;
+
     @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired private MockMvc mockMvc;
 
-    private MockMvc mockMvc;
+    @BeforeAll
+    void initBucket() {
+        bucket = Paths.get(storageRoot)
+                .toAbsolutePath()
+                .normalize()
+                .resolve(bucketName)
+                .normalize();
 
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        if (!Files.isDirectory(bucket)) {
+            throw new RuntimeException("Bucket is not a directory: " + bucket.toAbsolutePath());
+        }
+    }
+
+    @AfterAll
+    void clearTestStorage() throws IOException {
+        try (Stream<Path> paths = Files.walk(bucket)) {
+            paths.filter(p -> !p.equals(bucket))
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(p -> {
+                        try {
+                            Files.deleteIfExists(p);
+                        } catch (IOException ignored) {
+                        }
+                    });
+        }
     }
 
 

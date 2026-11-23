@@ -1,29 +1,45 @@
 package ru.yandex.practicum.integration.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.exceptions.post.image.PostImageNotFoundException;
-import ru.yandex.practicum.integration.configuration.ServiceRepositoryTestConfig;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.model.post.PostImage;
 import ru.yandex.practicum.repository.post.image.PostImageRepository;
 import ru.yandex.practicum.service.post.image.PostImageService;
 import ru.yandex.practicum.service.storage.FileStorageService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringJUnitConfig(ServiceRepositoryTestConfig.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK
+)
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PostImageServiceRepositoryIT {
+
+    @Value("${storage.local.root}")
+    private String storageRoot;
+
+    @Value("${storage.local.bucket.postimage}")
+    private String bucketName;
+
+    private Path bucket;
 
     @Autowired private PostImageService postImageService;
     @Autowired private PostImageRepository postImageRepository;
@@ -32,11 +48,38 @@ public class PostImageServiceRepositoryIT {
 
     private Post post;
 
+    @BeforeAll
+    void initBucket() {
+        bucket = Paths.get(storageRoot)
+                .toAbsolutePath()
+                .normalize()
+                .resolve(bucketName)
+                .normalize();
+
+        if (!Files.isDirectory(bucket)) {
+            throw new RuntimeException("Bucket is not a directory: " + bucket.toAbsolutePath());
+        }
+    }
+
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("insert into posts(id, title, text) values (?, ?, ?)", 66L, "title1", "text1");
         jdbcTemplate.update("insert into posts(id, title, text) values (?, ?, ?)", 67L, "title2", "text2");
         post = new Post(66L, "title1", "text1", 0);
+    }
+
+    @AfterAll
+    void clearTestStorage() throws IOException {
+        try (Stream<Path> paths = Files.walk(bucket)) {
+            paths.filter(p -> !p.equals(bucket))
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(p -> {
+                        try {
+                            Files.deleteIfExists(p);
+                        } catch (IOException ignored) {
+                        }
+                    });
+        }
     }
 
     private MockMultipartFile imageFile(String content) {

@@ -4,20 +4,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.integration.configuration.RepositoryTestConfig;
+import ru.yandex.practicum.repository.post.tag.JdbcNativeTagRepository;
 import ru.yandex.practicum.repository.post.tag.TagRepository;
+import ru.yandex.practicum.tools.ArrayDiffTools;
+import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig(RepositoryTestConfig.class)
+@JdbcTest
+@Import({DateTimeTools.class, ArrayDiffTools.class, JdbcNativeTagRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativeTagRepositoryIT {
+public class JdbcNativeTagRepositoryIT {
 
     @Autowired
     private TagRepository tagRepository;

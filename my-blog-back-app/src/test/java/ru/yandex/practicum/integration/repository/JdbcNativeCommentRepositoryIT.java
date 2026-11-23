@@ -4,14 +4,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
 import ru.yandex.practicum.dto.post.comment.UpdateCommentDto;
-import ru.yandex.practicum.integration.configuration.RepositoryTestConfig;
 import ru.yandex.practicum.model.post.Comment;
 import ru.yandex.practicum.repository.post.comment.CommentRepository;
+import ru.yandex.practicum.repository.post.comment.JdbcNativeCommentRepository;
+import ru.yandex.practicum.tools.DateTimeTools;
 
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
@@ -22,9 +24,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig(RepositoryTestConfig.class)
+@JdbcTest
+@Import({DateTimeTools.class, JdbcNativeCommentRepository.class})
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class JbcNativeCommentRepositoryIT {
+public class JdbcNativeCommentRepositoryIT {
 
     @Autowired
     private CommentRepository commentRepository;

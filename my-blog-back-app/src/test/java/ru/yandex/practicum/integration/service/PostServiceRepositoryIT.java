@@ -3,15 +3,14 @@ package ru.yandex.practicum.integration.service;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.dto.post.CreatePostWithTagsDto;
 import ru.yandex.practicum.dto.post.PaginatedPostListDto;
 import ru.yandex.practicum.dto.post.PostDto;
 import ru.yandex.practicum.dto.post.comment.CreateCommentDto;
-import ru.yandex.practicum.integration.configuration.ServiceRepositoryTestConfig;
 import ru.yandex.practicum.model.post.Post;
 import ru.yandex.practicum.service.post.comment.editor.CommentEditorService;
 import ru.yandex.practicum.service.post.editor.PostEditorService;
@@ -23,7 +22,9 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig(ServiceRepositoryTestConfig.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK
+)
 @Sql(scripts = "/test-schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class PostServiceRepositoryIT {
 
